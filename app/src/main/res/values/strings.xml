@@ -2,4 +2,6 @@
     <string name="app_name">TokenTravel</string>
     <string name="entrar">Entrar</string>
     <string name="text_cadastro">Criar uma Conta</string>
+    <string name="title_cadastro">Realize seu cadastro</string>
+    <string name="title_login">Login</string>
 </resources>
