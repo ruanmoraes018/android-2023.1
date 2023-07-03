@@ -4,4 +4,5 @@
     <string name="text_cadastro">Criar uma Conta</string>
     <string name="title_cadastro">Realize seu cadastro</string>
     <string name="title_login">Login</string>
+    <string name="title_pesquisa_rota">Pesquisa de Rotas</string>
 </resources>

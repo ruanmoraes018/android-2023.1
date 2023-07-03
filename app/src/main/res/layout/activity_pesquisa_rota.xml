@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/azul_marinho"
+        tools:context=".PesquisaRota">
+
+        <TextView
+            android:id="@+id/title_pesquisa_rota"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_pesquisa_rota"
+            android:textSize="40sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_marginTop="100dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <View
+            android:id="@+id/containerComponents"
+            style="@style/ContainerComponents2"
+            app:layout_constraintTop_toBottomOf="@id/title_pesquisa_rota"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+        <EditText
+            android:id="@+id/edit_origem"
+            style="@style/Edit_Text"
+            android:hint="Origem"
+            android:drawableRight="@drawable/ic_local_initial"
+            android:inputType="text"
+            app:layout_constraintTop_toTopOf="@id/containerComponents"
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintEnd_toEndOf="@id/containerComponents"
+            />
+
+        <EditText
+            android:id="@+id/edit_destino"
+            style="@style/Edit_Text"
+            android:hint="Destino"
+            android:drawableRight="@drawable/ic_local_destiny"
+            android:inputType="text"
+            app:layout_constraintTop_toBottomOf="@id/edit_origem"
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintEnd_toEndOf="@id/containerComponents"
+            />
+
+        <Spinner
+            android:id="@+id/spinner_user_type"
+            style="@style/Edit_Text"
+            android:hint="Dias da Semana"
+            app:layout_constraintTop_toBottomOf="@id/edit_destino"
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintEnd_toEndOf="@id/containerComponents"
+            />
+
+        <androidx.appcompat.widget.AppCompatButton
+            style="@style/Button"
+            android:text="Pesquisar"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@id/spinner_user_type"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>
