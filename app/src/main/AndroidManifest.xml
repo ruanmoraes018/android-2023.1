@@ -13,6 +13,9 @@
         android:theme="@style/Theme.TokenTravel"
         tools:targetApi="31">
         <activity
+            android:name=".Tela_principal_passageiro"
+            android:exported="false" />
+        <activity
             android:name=".FormCadastro"
             android:exported="false" />
         <activity
