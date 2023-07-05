@@ -5,4 +5,9 @@
     <string name="title_cadastro">Realize seu cadastro</string>
     <string name="title_login">Login</string>
     <string name="title_pesquisa_rota">Pesquisa de Rotas</string>
+
+    <string name="abrir">Abrir</string>
+    <string name="fechar">Fechar</string>
+
+
 </resources>

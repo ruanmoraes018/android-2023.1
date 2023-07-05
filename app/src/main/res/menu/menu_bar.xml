@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view"
+    >
+
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/menu"
+            android:icon="@drawable/ic_bar_pessoa"
+            android:title="Meus Dados"
+            />
+
+        <item
+            android:id="@+id/historico"
+            android:icon="@drawable/ic_bar_historico_car"
+            android:title="Histórico de corridas"
+            />
+
+        <item
+            android:id="@+id/suporte"
+            android:icon="@drawable/ic_bar_suporte"
+            android:title="Fale Conosco"
+            />
+
+        <item
+            android:id="@+id/deslogar"
+            android:icon="@drawable/ic_bar_deslogar"
+            android:title="Sair"
+            />
+
+    </group>
+
+    <!--Para adiconar mais itens a navbar-->
+    <!--    <item android:title="Suporte">-->
+
+    <!--        <menu>-->
+
+    <!--        </menu>-->
+
+    <!--    </item>-->
+
+
+</menu>
