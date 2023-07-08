@@ -69,6 +69,7 @@
             />
 
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/botao_pesquisar_rota"
             style="@style/Button"
             android:text="Pesquisar"
             android:layout_marginTop="20dp"

@@ -26,11 +26,19 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:id="@+id/frameLayout"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/botao_pesquisar_rota"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Button"
+            android:layout_gravity="center"
+            android:layout_marginTop="-75dp"
+            android:text="@string/pesquisar_rota" />
 
     </LinearLayout>
-
-
 
     <com.google.android.material.navigation.NavigationView
         android:layout_width="wrap_content"
@@ -41,5 +49,5 @@
         android:layout_height="match_parent"
         />
 
-    
+
 </androidx.drawerlayout.widget.DrawerLayout>
