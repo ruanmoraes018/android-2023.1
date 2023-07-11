@@ -16,7 +16,7 @@ Handler handler;
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(MainActivity.this, Form_Login.class);
+                Intent intent = new Intent(MainActivity.this, SelecaoActivity.class);
                 startActivity(intent);
                 finish();
             }
