@@ -37,7 +37,7 @@
         android:id="@+id/bt_login"
         style="@style/Button"
         android:layout_width="100dp"
-        android:layout_height="60dp"
+        android:layout_height="65dp"
         android:text="@string/title_login"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
