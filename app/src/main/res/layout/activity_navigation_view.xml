@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     tools:openDrawer="start"
-    android:fitsSystemWindows="true"
+    android:fitsSystemWindows="false"
     android:id="@+id/drawerLayout"
     android:layout_height="match_parent"
+
     tools:context=".Navigation_View">
 
     <LinearLayout
