@@ -34,7 +34,18 @@
                 android:id="@+id/mapView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
-            </FrameLayout>
+
+            <!-- Replace the existing Button with ImageView -->
+            <ImageView
+                android:id="@+id/btn_update_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="16dp"
+                android:src="@drawable/ic_update_location"
+                android:visibility="gone" />
+
+        </FrameLayout>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/botao_pesquisar_rota"
