@@ -34,7 +34,7 @@
             android:name=".Tela_principal_passageiro"
             android:exported="false" />
         <activity
-            android:name=".FormCadastro"
+            android:name=".FormCadastro" android:parentActivityName=".Form_Login"
             android:exported="false" />
         <activity
             android:name=".SelecaoActivity"
