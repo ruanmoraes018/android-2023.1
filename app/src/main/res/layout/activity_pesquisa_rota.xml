@@ -71,6 +71,7 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/botao_pesquisar_rota"
             style="@style/Button"
+            android:onClick="notificationButton"
             android:text="Pesquisar"
             android:layout_marginTop="20dp"
             app:layout_constraintTop_toBottomOf="@id/spinner_user_type"
