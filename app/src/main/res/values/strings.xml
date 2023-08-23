@@ -13,5 +13,5 @@
     <string name="abrir">Abrir</string>
     <string name="fechar">Fechar</string>
 
-    <string name="mapbox_access_token">pk.eyJ1IjoicnVhbm1vcmFlczAxOCIsImEiOiJjbGwxanNvN24yOWJ6M2ZtYWZjYzVsa2E2In0.lFm_E0dPjTQ3yDbJyorANw</string>
+    <string name="mapbox_access_token">publico</string>
 </resources>
