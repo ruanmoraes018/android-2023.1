@@ -14,9 +14,9 @@
             />
 
         <item
-            android:id="@+id/historico"
+            android:id="@+id/favoritos"
             android:icon="@drawable/ic_bar_historico_car"
-            android:title="Histórico de corridas"
+            android:title="Motoristas Favoritos"
             />
 
         <item

@@ -4,10 +4,15 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +29,7 @@ import retrofit2.Response;
 
 import com.mapbox.api.geocoding.v5.GeocodingCriteria;
 import com.mapbox.api.geocoding.v5.MapboxGeocoding;
+import com.mapbox.api.geocoding.v5.models.CarmenContext;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 import com.mapbox.geojson.Point;
@@ -32,15 +38,15 @@ import java.util.List;
 
 public class PesquisaRota extends AppCompatActivity {
 
-    private EditText editOrigem; // Adicione esta variável
-    private EditText editDestino; // Adicione esta variável
+    private EditText editOrigem;
+    private EditText editDestino;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pesquisa_rota);
 
-        editOrigem = findViewById(R.id.edit_origem); // Inicialize o EditText
+        editOrigem = findViewById(R.id.edit_origem);
         editDestino = findViewById(R.id.edit_destino);
 
         Spinner spinnerUserType = findViewById(R.id.spinner_user_type);
@@ -71,7 +77,47 @@ public class PesquisaRota extends AppCompatActivity {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
+
+
+        editOrigem = findViewById(R.id.edit_origem);
+
+
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        @SuppressLint("MissingPermission") Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+
+        if (location != null) {
+
+            MapboxGeocoding geocodingService = MapboxGeocoding.builder()
+                    .accessToken(getResources().getString(R.string.mapbox_access_token))
+                    .query(Point.fromLngLat(location.getLongitude(), location.getLatitude()))
+                    .geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
+                    .build();
+
+            geocodingService.enqueueCall(new Callback<GeocodingResponse>() {
+
+                @Override
+                public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
+                    if (response.body() != null && !response.body().features().isEmpty()) {
+                        CarmenFeature feature = response.body().features().get(0);
+                        String cityName = getCityNameFromFeature(feature);
+                        String stateName = getStateNameFromFeature(feature);
+                        String countryName = getCountryNameFromFeature(feature);
+
+                        String locationInfo = cityName + ", " + stateName + ", " + countryName;
+                        editOrigem.setText(locationInfo);
+                    }
+                }
+
+
+                @Override
+                public void onFailure(Call<GeocodingResponse> call, Throwable throwable) {
+                    Toast.makeText(PesquisaRota.this, "Erro ao obter descrição de origem, forneça manualmente!", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void notificationButton (View view){
@@ -126,8 +172,35 @@ public class PesquisaRota extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<GeocodingResponse> call, Throwable t) {
-               // Toast.makeText(PesquisaRota.this, "Não foi possível obter o ponto de origem, forneça manualmente!", Toast.LENGTH_LONG).show();
+                Toast.makeText(PesquisaRota.this, "Algo deu errado, verifique sua conexão!", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private String getCityNameFromFeature(CarmenFeature feature) {
+        for (CarmenContext context : feature.context()) {
+            if (context.id().startsWith("place")) {
+                return context.text();
+            }
+        }
+        return "";
+    }
+
+    private String getStateNameFromFeature(CarmenFeature feature) {
+        for (CarmenContext context : feature.context()) {
+            if (context.id().startsWith("region")) {
+                return context.text();
+            }
+        }
+        return "";
+    }
+
+    private String getCountryNameFromFeature(CarmenFeature feature) {
+        for (CarmenContext context : feature.context()) {
+            if (context.id().startsWith("country")) {
+                return context.text();
+            }
+        }
+        return "";
     }
 }

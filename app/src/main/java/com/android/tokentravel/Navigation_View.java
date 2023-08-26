@@ -120,10 +120,10 @@ public class Navigation_View extends AppCompatActivity {
                     Toast.makeText(Navigation_View.this, "Meus Dados", Toast.LENGTH_SHORT);
                     fragmentR(new MenuFragment());
                     botaoPesquisarRota.setVisibility(View.GONE);
-                } else if (itemId == R.id.historico) {
-                    fragmentR(new HistoricoFragment());
+                } else if (itemId == R.id.favoritos) {
+                    fragmentR(new FavoritosFragment());
                     drawerLayout.closeDrawer(GravityCompat.START);
-                    Toast.makeText(Navigation_View.this, "Histórico", Toast.LENGTH_SHORT);
+                    Toast.makeText(Navigation_View.this, "Favoritos", Toast.LENGTH_SHORT);
                     botaoPesquisarRota.setVisibility(View.GONE);
                 } else if (itemId == R.id.suporte) {
                     fragmentR(new SuporteFragment());

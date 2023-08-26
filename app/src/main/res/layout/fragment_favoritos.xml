@@ -5,11 +5,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/azul_marinho"
-    tools:context=".HistoricoFragment">
+    tools:context=".FavoritosFragment">
 
     <TextView
         android:layout_width="match_parent"
-        android:text="Histórico"
+        android:text="Rotas Favoritas"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
