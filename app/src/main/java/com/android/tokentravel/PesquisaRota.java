@@ -78,9 +78,7 @@ public class PesquisaRota extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
 
-
         editOrigem = findViewById(R.id.edit_origem);
-
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
