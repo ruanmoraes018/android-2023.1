@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -16,10 +17,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.android.tokentravel.dao.Dao;
+import com.android.tokentravel.objetos.Pessoa;
+
 
 public class FormCadastro extends AppCompatActivity {
     EditText editTextNome, editTextEmail, editTextSenha;
-    Spinner spinnerTipoUsuario;
+    Spinner spinnerTipo;
     Button botao;
     SQLiteDatabase bancoDados;
 
@@ -27,12 +31,6 @@ public class FormCadastro extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form_cadastro);
-
-        editTextNome = (EditText) findViewById(R.id.edit_nome);
-        editTextEmail = (EditText) findViewById(R.id.edit_email);
-        editTextSenha = (EditText) findViewById(R.id.edit_senha);
-        spinnerTipoUsuario = (Spinner) findViewById(R.id.spinner_user_type);
-        botao = (Button) findViewById(R.id.bt_cadastrar);
 
         Spinner spinnerUserType = findViewById(R.id.spinner_user_type);
 
@@ -65,22 +63,21 @@ public class FormCadastro extends AppCompatActivity {
     }
 
     public void cadastrar(){
-        if(!TextUtils.isEmpty(editTextNome.getText().toString())){
-            try {
-                bancoDados = openOrCreateDatabase("crudTokenTravel", MODE_PRIVATE, null);
-                String sql = "INSERT INTO usuario (nome, email, senha, tipo) VALUES (?,?,?,?)";
-                SQLiteStatement stmt = bancoDados.compileStatement(sql);
-                stmt.bindString(1,editTextNome.getText().toString());
-                stmt.bindString(2,editTextEmail.getText().toString());
-                stmt.bindString(3,editTextSenha.getText().toString());
-                stmt.bindString(4,spinnerTipoUsuario.getSelectedItem().toString());
-                stmt.executeInsert();
-                bancoDados.close();
-                finish();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        String nome = editTextNome.getText().toString();
+        String email = editTextEmail.getText().toString();
+        String senha = editTextSenha.getText().toString();
+        String tipo = spinnerTipo.getSelectedItem().toString();
+        botao = (Button) findViewById(R.id.bt_cadastrar);
+
+        Pessoa pessoa = new Pessoa();
+        pessoa.setPessoa_nome(nome);
+        pessoa.setPessoa_email(email);
+        pessoa.setPessoa_senha(senha);
+        pessoa.setPessoa_tipo(tipo);
+
+        Dao dao = new Dao(this);
+        String reultado = dao.inserirPessoa(pessoa);
+        Log.d("Resultado: ", reultado);
 
     }
 }
