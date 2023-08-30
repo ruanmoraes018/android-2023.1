@@ -14,7 +14,6 @@ import android.widget.Button;
 
 
 public class Form_Login extends AppCompatActivity {
-    private SQLiteDatabase bancoDados;
     private TextView text_tela_cadastro;
     private Button btEntrar;
 

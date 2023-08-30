@@ -42,8 +42,7 @@
             android:exported="false" />
         <activity
             android:name=".FormCadastro"
-            android:exported="false"
-            android:parentActivityName=".Form_Login" />
+            android:exported="false" />
         <activity
             android:name=".SelecaoActivity"
             android:exported="false" />

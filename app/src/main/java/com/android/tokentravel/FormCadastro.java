@@ -25,14 +25,17 @@ public class FormCadastro extends AppCompatActivity {
     EditText editTextNome, editTextEmail, editTextSenha;
     Spinner spinnerTipo;
     Button botao;
-    SQLiteDatabase bancoDados;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form_cadastro);
+        botao = (Button) findViewById(R.id.bt_cadastrar);
 
-        Spinner spinnerUserType = findViewById(R.id.spinner_user_type);
+        editTextNome = findViewById(R.id.edit_nome);
+        editTextEmail = findViewById(R.id.edit_email);
+        editTextSenha = findViewById(R.id.edit_senha);
+        spinnerTipo = findViewById(R.id.spinner_user_type);
 
         String[] userTypes = {"Passageiro", "Motorista"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, userTypes) {
@@ -52,14 +55,22 @@ public class FormCadastro extends AppCompatActivity {
                 return view;
             }
         };
-        spinnerUserType.setAdapter(adapter);
+        spinnerTipo.setAdapter(adapter);
 
-        botao.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                cadastrar();
-            }
-        });
+        Button button = findViewById(R.id.bt_cadastrar);
+
+        if (button != null) {
+            botao.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(FormCadastro.this, Form_Login.class);
+                    startActivity(intent);
+                    cadastrar();
+                }
+            });
+        } else {
+            onRestart();
+        }
     }
 
     public void cadastrar(){
@@ -67,7 +78,6 @@ public class FormCadastro extends AppCompatActivity {
         String email = editTextEmail.getText().toString();
         String senha = editTextSenha.getText().toString();
         String tipo = spinnerTipo.getSelectedItem().toString();
-        botao = (Button) findViewById(R.id.bt_cadastrar);
 
         Pessoa pessoa = new Pessoa();
         pessoa.setPessoa_nome(nome);
@@ -76,8 +86,7 @@ public class FormCadastro extends AppCompatActivity {
         pessoa.setPessoa_tipo(tipo);
 
         Dao dao = new Dao(this);
-        String reultado = dao.inserirPessoa(pessoa);
-        Log.d("Resultado: ", reultado);
-
+        String resultado = dao.inserirPessoa(pessoa);
+        Log.d("Resultado: ", resultado);
     }
 }

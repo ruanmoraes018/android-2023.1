@@ -38,10 +38,10 @@ public class Dao extends SQLiteOpenHelper {
 
         // Dados a serem gravados no banco
         ContentValues dados_pessoa = new ContentValues();
-        dados_pessoa.put("nome", pessoa.getPessoa_nome());
-        dados_pessoa.put("email", pessoa.getPessoa_email());
-        dados_pessoa.put("senha", pessoa.getPessoa_senha());
-        dados_pessoa.put("tipo", pessoa.getPessoa_tipo());
+        dados_pessoa.put("pessoas_nome", pessoa.getPessoa_nome());
+        dados_pessoa.put("pessoas_email", pessoa.getPessoa_email());
+        dados_pessoa.put("pessoas_senha", pessoa.getPessoa_senha());
+        dados_pessoa.put("pessoas_tipo", pessoa.getPessoa_tipo());
         // ===========================
 
 
