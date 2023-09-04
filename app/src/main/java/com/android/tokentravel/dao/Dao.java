@@ -1,13 +1,22 @@
 package com.android.tokentravel.dao;
 
+import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
+import static java.security.AccessController.getContext;
+
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import com.android.tokentravel.objetos.Pessoa;
+
+import java.security.AccessControlContext;
 
 public class Dao extends SQLiteOpenHelper {
     public Dao(Context context) {
@@ -18,7 +27,7 @@ public class Dao extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String sql_pessoas = "CREATE TABLE pessoas (pessoas_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "pessoas_nome TEXT, " +
-                "pessoas_email TEXT UNIQUE, " +
+                "pessoas_email TEXT UNIQUE NOT NULL, " +
                 "pessoas_senha TEXT, " +
                 "pessoas_tipo TEXT);";
 
@@ -50,4 +59,23 @@ public class Dao extends SQLiteOpenHelper {
 
         return "Sucesso";
     }
+
+    public String buscaPessoa(String email){
+
+        String sql_busca_pessoa =  "SELECT * FROM pessoas WHERE pessoas_email = " + "'" + email + "'";
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor c = db.rawQuery(sql_busca_pessoa, null);
+
+        if(c.moveToNext()){
+            return "resultado";
+        }else{
+            return null;
+        }
+    }
+
+
+
+
+
 }
