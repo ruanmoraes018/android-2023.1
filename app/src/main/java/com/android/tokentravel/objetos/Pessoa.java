@@ -8,6 +8,14 @@ public class Pessoa {
     String pessoa_senha;
     String pessoa_tipo;
 
+    public Pessoa(String pessoa_nome, String pessoa_cpf, String pessoa_email, String pessoa_senha, String pessoa_tipo) {
+        this.pessoa_nome = pessoa_nome;
+        this.pessoa_cpf = pessoa_cpf;
+        this.pessoa_email = pessoa_email;
+        this.pessoa_senha = pessoa_senha;
+        this.pessoa_tipo = pessoa_tipo;
+    }
+
     public Integer getPessoa_id() {
         return pessoa_id;
     }

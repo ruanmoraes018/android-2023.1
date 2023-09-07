@@ -132,12 +132,12 @@ public class FormCadastro extends AppCompatActivity {
             return;
         }
 
-        Pessoa pessoa = new Pessoa();
-        pessoa.setPessoa_nome(nome);
-        pessoa.setPessoa_cpf(cpf);
-        pessoa.setPessoa_email(email);
-        pessoa.setPessoa_senha(senha);
-        pessoa.setPessoa_tipo(tipo);
+        Pessoa pessoa = new Pessoa(nome, cpf, email, senha, tipo);
+//        pessoa.setPessoa_nome(nome);
+//        pessoa.setPessoa_cpf(cpf);
+//        pessoa.setPessoa_email(email);
+//        pessoa.setPessoa_senha(senha);
+//        pessoa.setPessoa_tipo(tipo);
 
         Dao dao = new Dao(this);
         String resultado = dao.inserirPessoa(pessoa);

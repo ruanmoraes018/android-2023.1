@@ -31,7 +31,6 @@ public class Dao extends SQLiteOpenHelper {
                 "pessoas_email TEXT UNIQUE NOT NULL, " +
                 "pessoas_senha TEXT, " +
                 "pessoas_tipo TEXT);";
-
         db.execSQL(sql_pessoas);
     }
 
