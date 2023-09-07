@@ -3,6 +3,7 @@ package com.android.tokentravel.objetos;
 public class Pessoa {
     Integer pessoa_id;
     String pessoa_nome;
+    String pessoa_cpf;
     String pessoa_email;
     String pessoa_senha;
     String pessoa_tipo;
@@ -17,6 +18,14 @@ public class Pessoa {
 
     public void setPessoa_nome(String pessoa_nome) {
         this.pessoa_nome = pessoa_nome;
+    }
+
+    public String getPessoa_cpf() {
+        return pessoa_cpf;
+    }
+
+    public void setPessoa_cpf(String pessoa_cpf) {
+        this.pessoa_cpf = pessoa_cpf;
     }
 
     public String getPessoa_email() {

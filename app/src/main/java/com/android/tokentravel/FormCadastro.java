@@ -23,7 +23,7 @@ import com.android.tokentravel.objetos.Pessoa;
 
 
 public class FormCadastro extends AppCompatActivity {
-    EditText editTextNome, editTextEmail, editTextSenha;
+    EditText editTextNome, editTextCPF, editTextEmail, editTextSenha;
     Spinner spinnerTipo;
     Button botao;
 
@@ -34,6 +34,7 @@ public class FormCadastro extends AppCompatActivity {
         botao = (Button) findViewById(R.id.bt_cadastrar);
 
         editTextNome = findViewById(R.id.edit_nome);
+        editTextCPF = findViewById(R.id.edit_cpf);
         editTextEmail = findViewById(R.id.edit_email);
         editTextSenha = findViewById(R.id.edit_senha);
         spinnerTipo = findViewById(R.id.spinner_user_type);
@@ -64,29 +65,44 @@ public class FormCadastro extends AppCompatActivity {
             botao.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
                     // Verifica se o email já está cadastrado
                     String email = editTextEmail.getText().toString();
                     Dao dao = new Dao(getApplicationContext());
-                    String resultado;
+                    String resultadoEmail;
+
                     try {
-                        resultado = dao.buscaPessoa(email);
+                        resultadoEmail = dao.buscaPessoaemail(email);
                     } catch (Exception e) {
                         Log.e("Erro", e.getMessage());
                         Toast.makeText(getApplicationContext(), "Erro ao verificar o email.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    if (resultado != null) {
+                    // Verifica se o CPF já está cadastrado
+                    String cpf = editTextCPF.getText().toString();
+                    String resultadoCPF;
+
+                    try {
+                        resultadoCPF = dao.buscaPessoaCPF(cpf);
+                    } catch (Exception e) {
+                        Log.e("Erro", e.getMessage());
+                        Toast.makeText(getApplicationContext(), "Erro ao verificar o CPF.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (resultadoEmail != null) {
                         // O email já está cadastrado
                         Toast.makeText(getApplicationContext(), "O email já está cadastrado.", Toast.LENGTH_SHORT).show();
-                        return;
+                    } else if (resultadoCPF != null) {
+                        // O CPF já está cadastrado
+                        Toast.makeText(getApplicationContext(), "O CPF já está cadastrado.", Toast.LENGTH_SHORT).show();
                     } else {
-                        // O email não está cadastrado
+                        // Nenhum conflito, pode cadastrar
                         cadastrar();
                     }
                 }
             });
+
 
         } else {
             onRestart();
@@ -94,12 +110,17 @@ public class FormCadastro extends AppCompatActivity {
     }
     private void cadastrar(){
         String nome = editTextNome.getText().toString();
+        String cpf = editTextCPF.getText().toString();
         String email = editTextEmail.getText().toString();
         String senha = editTextSenha.getText().toString();
         String tipo = spinnerTipo.getSelectedItem().toString();
 
         if(TextUtils.isEmpty(nome)){
             Toast.makeText(this, "O nome é obrigatório.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(TextUtils.isEmpty(cpf)){
+            Toast.makeText(this, "O cpf é obrigatório.", Toast.LENGTH_SHORT).show();
             return;
         }
         if(TextUtils.isEmpty(email)){
@@ -113,6 +134,7 @@ public class FormCadastro extends AppCompatActivity {
 
         Pessoa pessoa = new Pessoa();
         pessoa.setPessoa_nome(nome);
+        pessoa.setPessoa_cpf(cpf);
         pessoa.setPessoa_email(email);
         pessoa.setPessoa_senha(senha);
         pessoa.setPessoa_tipo(tipo);

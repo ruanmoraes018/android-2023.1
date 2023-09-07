@@ -27,6 +27,7 @@ public class Dao extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String sql_pessoas = "CREATE TABLE pessoas (pessoas_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "pessoas_nome TEXT, " +
+                "pessoas_cpf TEXT UNIQUE NOT NULL, " +
                 "pessoas_email TEXT UNIQUE NOT NULL, " +
                 "pessoas_senha TEXT, " +
                 "pessoas_tipo TEXT);";
@@ -48,6 +49,7 @@ public class Dao extends SQLiteOpenHelper {
         // Dados a serem gravados no banco
         ContentValues dados_pessoa = new ContentValues();
         dados_pessoa.put("pessoas_nome", pessoa.getPessoa_nome());
+        dados_pessoa.put("pessoas_cpf", pessoa.getPessoa_cpf());
         dados_pessoa.put("pessoas_email", pessoa.getPessoa_email());
         dados_pessoa.put("pessoas_senha", pessoa.getPessoa_senha());
         dados_pessoa.put("pessoas_tipo", pessoa.getPessoa_tipo());
@@ -60,7 +62,7 @@ public class Dao extends SQLiteOpenHelper {
         return "Sucesso";
     }
 
-    public String buscaPessoa(String email){
+    public String buscaPessoaemail(String email){
 
         String sql_busca_pessoa =  "SELECT * FROM pessoas WHERE pessoas_email = " + "'" + email + "'";
         SQLiteDatabase db = getReadableDatabase();
@@ -74,8 +76,16 @@ public class Dao extends SQLiteOpenHelper {
         }
     }
 
+    public String buscaPessoaCPF(String cpf) {
+        String buscaPessoaPorCPF = "SELECT * FROM pessoas WHERE pessoas_cpf = '" + cpf + "'";
+        SQLiteDatabase db = getReadableDatabase();
 
+        Cursor c = db.rawQuery(buscaPessoaPorCPF, null);
 
-
-
+        if(c.moveToNext()){
+            return "resultado1";
+        }else{
+            return null;
+        }
+    }
 }
