@@ -38,8 +38,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             />
 
-        <EditText
-            android:id="@+id/edit_origem"
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteOrigem"
             style="@style/Edit_Text"
             android:hint="Origem"
             android:drawableRight="@drawable/ic_local_initial"
@@ -49,13 +49,13 @@
             app:layout_constraintEnd_toEndOf="@id/containerComponents"
             />
 
-        <EditText
-            android:id="@+id/edit_destino"
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteDestino"
             style="@style/Edit_Text"
             android:hint="Destino"
             android:drawableRight="@drawable/ic_local_destiny"
             android:inputType="text"
-            app:layout_constraintTop_toBottomOf="@id/edit_origem"
+            app:layout_constraintTop_toBottomOf="@id/autoCompleteOrigem"
             app:layout_constraintStart_toStartOf="@id/containerComponents"
             app:layout_constraintEnd_toEndOf="@id/containerComponents"
             />
@@ -64,7 +64,7 @@
             android:id="@+id/spinner_user_type"
             style="@style/Edit_Text"
             android:hint="Dias da Semana"
-            app:layout_constraintTop_toBottomOf="@id/edit_destino"
+            app:layout_constraintTop_toBottomOf="@id/autoCompleteDestino"
             app:layout_constraintStart_toStartOf="@id/containerComponents"
             app:layout_constraintEnd_toEndOf="@id/containerComponents"
             />
