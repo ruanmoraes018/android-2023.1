@@ -2,8 +2,11 @@ package com.android.tokentravel;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.mapbox.api.directions.v5.DirectionsCriteria;
@@ -50,10 +53,14 @@ public class RotaPontoaPonto extends AppCompatActivity {
     private double latitudeDestino;
     private double longitudeDestino;
 
+    private Button btListadeMoto;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rota_pontoa_ponto);
+
+        btListadeMotoristas();
 
         // Recupere as coordenadas de origem e destino da Intent
         latitudeOrigem = getIntent().getDoubleExtra("latitudeOrigem", 0.0);
@@ -128,6 +135,16 @@ public class RotaPontoaPonto extends AppCompatActivity {
                 });
             }
         });
+
+
+        btListadeMoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(RotaPontoaPonto.this, Lista_motoras_dispon.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     private void initSource(@NonNull Style loadedMapStyle) {
@@ -219,5 +236,9 @@ public class RotaPontoaPonto extends AppCompatActivity {
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
+    }
+
+    private void btListadeMotoristas(){
+        btListadeMoto = findViewById(R.id.verificarMotoristasButton);
     }
 }

@@ -38,7 +38,7 @@
             android:name=".Tela_principal_motorista"
             android:exported="false" />
         <activity
-            android:name=".Tela_principal_passageiro"
+            android:name=".Lista_motoras_dispon"
             android:exported="false" />
         <activity
             android:name=".FormCadastro"

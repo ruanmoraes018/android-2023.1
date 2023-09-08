@@ -130,6 +130,10 @@ public class PesquisaRota extends AppCompatActivity {
             });
         }
 
+        else{
+            Toast.makeText(PesquisaRota.this, "Não foi possível obter automaticamente a origem, forneça manualmente!", Toast.LENGTH_LONG).show();
+        }
+
         // Configurar o TextWatcher para as caixas de texto de origem e destino
         autoCompleteOrigem.addTextChangedListener(new TextWatcher() {
             private CharSequence beforeText;
