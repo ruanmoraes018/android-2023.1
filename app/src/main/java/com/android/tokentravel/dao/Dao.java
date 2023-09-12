@@ -58,12 +58,12 @@ public class Dao extends SQLiteOpenHelper {
         db.insert("pessoas", null, dados_pessoa);
         db.close();
 
-        return "Sucesso";
+        return pessoa.getPessoa_tipo() + " cadastrado com sucesso";
     }
 
     public String buscaPessoaemail(String email){
 
-        String sql_busca_pessoa =  "SELECT * FROM pessoas WHERE pessoas_email = " + "'" + email + "'";
+        String sql_busca_pessoa =  "SELECT * FROM pessoas WHERE pessoas_email = " + "'" + email + "';";
         SQLiteDatabase db = getReadableDatabase();
 
         Cursor c = db.rawQuery(sql_busca_pessoa, null);
@@ -76,13 +76,25 @@ public class Dao extends SQLiteOpenHelper {
     }
 
     public String buscaPessoaCPF(String cpf) {
-        String buscaPessoaPorCPF = "SELECT * FROM pessoas WHERE pessoas_cpf = '" + cpf + "'";
+        String buscaPessoaPorCPF = "SELECT * FROM pessoas WHERE pessoas_cpf = '" + cpf + "';";
         SQLiteDatabase db = getReadableDatabase();
 
         Cursor c = db.rawQuery(buscaPessoaPorCPF, null);
 
         if(c.moveToNext()){
             return "resultado1";
+        }else{
+            return null;
+        }
+    }
+    public String buscaPessoaTipo(String tipo) {
+        String buscaPessoaPorTipo = "SELECT * FROM pessoas WHERE pessoas_tipo = '" + tipo + "';";
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor c = db.rawQuery(buscaPessoaPorTipo, null);
+
+        if(c.moveToNext()){
+            return "resultado2";
         }else{
             return null;
         }

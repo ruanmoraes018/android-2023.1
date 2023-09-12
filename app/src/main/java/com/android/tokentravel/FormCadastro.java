@@ -19,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.tokentravel.dao.Dao;
+import com.android.tokentravel.objetos.Motorista;
+import com.android.tokentravel.objetos.Passageiro;
 import com.android.tokentravel.objetos.Pessoa;
 
 
@@ -67,6 +69,7 @@ public class FormCadastro extends AppCompatActivity {
                 public void onClick(View view) {
                     // Verifica se o email já está cadastrado
                     String email = editTextEmail.getText().toString();
+                    String tipo = spinnerTipo.getSelectedItem().toString();
                     Dao dao = new Dao(getApplicationContext());
                     String resultadoEmail;
 
@@ -90,30 +93,48 @@ public class FormCadastro extends AppCompatActivity {
                         return;
                     }
 
+                    String resultadoTipo;
+
+                    try {
+                        resultadoTipo = dao.buscaPessoaTipo(tipo);
+                    } catch (Exception e) {
+                        Log.e("Erro", e.getMessage());
+                        Toast.makeText(getApplicationContext(), "Erro ao verificar o Tipo.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+
                     if (resultadoEmail != null) {
                         // O email já está cadastrado
                         Toast.makeText(getApplicationContext(), "O email já está cadastrado.", Toast.LENGTH_SHORT).show();
                     } else if (resultadoCPF != null) {
                         // O CPF já está cadastrado
                         Toast.makeText(getApplicationContext(), "O CPF já está cadastrado.", Toast.LENGTH_SHORT).show();
+
+                    } else if (resultadoTipo != null) {
+                        // O Tipo já está cadastrado
+                        Toast.makeText(getApplicationContext(), "Tipo já definido neste usuário.", Toast.LENGTH_SHORT).show();
+
                     } else {
-                        // Nenhum conflito, pode cadastrar
-                        cadastrar();
+                        if (tipo.equals("Passageiro")) {
+                            cadastrarPassageiro();
+                        } else if (tipo.equals("Motorista")) {
+                            cadastrarMotorista();
+                        }
                     }
                 }
             });
-
-
         } else {
             onRestart();
         }
     }
-    private void cadastrar(){
+    private void cadastrarPassageiro(){
         String nome = editTextNome.getText().toString();
         String cpf = editTextCPF.getText().toString();
         String email = editTextEmail.getText().toString();
         String senha = editTextSenha.getText().toString();
         String tipo = spinnerTipo.getSelectedItem().toString();
+        int numero = 0;
 
         if(TextUtils.isEmpty(nome)){
             Toast.makeText(this, "O nome é obrigatório.", Toast.LENGTH_SHORT).show();
@@ -132,7 +153,7 @@ public class FormCadastro extends AppCompatActivity {
             return;
         }
 
-        Pessoa pessoa = new Pessoa(nome, cpf, email, senha, tipo);
+        Passageiro passageiro = new Passageiro(nome, cpf, email, senha, tipo, numero);
 //        pessoa.setPessoa_nome(nome);
 //        pessoa.setPessoa_cpf(cpf);
 //        pessoa.setPessoa_email(email);
@@ -140,7 +161,46 @@ public class FormCadastro extends AppCompatActivity {
 //        pessoa.setPessoa_tipo(tipo);
 
         Dao dao = new Dao(this);
-        String resultado = dao.inserirPessoa(pessoa);
+        String resultado = dao.inserirPessoa(passageiro);
+        Log.d("Resultado: ", resultado);
+
+        Intent intent = new Intent(this, Form_Login.class);
+        startActivity(intent);
+    }
+    private void cadastrarMotorista(){
+        String nome = editTextNome.getText().toString();
+        String cpf = editTextCPF.getText().toString();
+        String email = editTextEmail.getText().toString();
+        String senha = editTextSenha.getText().toString();
+        String tipo = spinnerTipo.getSelectedItem().toString();
+        String cnh = "";
+
+        if(TextUtils.isEmpty(nome)){
+            Toast.makeText(this, "O nome é obrigatório.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(TextUtils.isEmpty(cpf)){
+            Toast.makeText(this, "O cpf é obrigatório.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(TextUtils.isEmpty(email)){
+            Toast.makeText(this, "O e-mail é obrigatório.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(TextUtils.isEmpty(senha)){
+            Toast.makeText(this, "A senha é obrigatória.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Motorista motorista = new Motorista(nome, cpf, email, senha, tipo, cnh);
+//        pessoa.setPessoa_nome(nome);
+//        pessoa.setPessoa_cpf(cpf);
+//        pessoa.setPessoa_email(email);
+//        pessoa.setPessoa_senha(senha);
+//        pessoa.setPessoa_tipo(tipo);
+
+        Dao dao = new Dao(this);
+        String resultado = dao.inserirPessoa(motorista);
         Log.d("Resultado: ", resultado);
 
         Intent intent = new Intent(this, Form_Login.class);
