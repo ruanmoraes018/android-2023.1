@@ -7,12 +7,14 @@ public class Pessoa {
     String pessoa_email;
     String pessoa_senha;
     String pessoa_tipo;
+    String pessoa_telefone;
 
-    public Pessoa(String pessoa_nome, String pessoa_cpf, String pessoa_email, String pessoa_senha, String pessoa_tipo) {
+    public Pessoa(String pessoa_nome, String pessoa_cpf, String pessoa_email, String pessoa_senha, String pessoa_telefone , String pessoa_tipo) {
         this.pessoa_nome = pessoa_nome;
         this.pessoa_cpf = pessoa_cpf;
         this.pessoa_email = pessoa_email;
         this.pessoa_senha = pessoa_senha;
+        this.pessoa_telefone = pessoa_telefone;
         this.pessoa_tipo = pessoa_tipo;
     }
 
@@ -56,7 +58,11 @@ public class Pessoa {
         return pessoa_tipo;
     }
 
-    public void setPessoa_tipo(String pessoa_tipo) {
-        this.pessoa_tipo = pessoa_tipo;
+    public void setPessoa_tipo(String pessoa_tipo) { this.pessoa_tipo = pessoa_tipo; }
+
+    public String getPessoa_telefone() { return pessoa_telefone; }
+
+    public void setPessoa_telefone(String pessoa_telefone) {
+        this.pessoa_telefone = pessoa_telefone;
     }
 }
