@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp">
+
+    <View
+        android:id="@+id/containerComponents"
+        style="@style/ContainerComponents2"
+        android:layout_width="wrap_content"
+        android:layout_height="115dp"
+        android:backgroundTint="@color/verde"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textOrigem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:paddingTop="15dp"
+        android:text="Origem: Capitão Poço Pará Brasil"
+        android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        app:layout_constraintTop_toTopOf="@id/containerComponents" />
+    <TextView
+        android:id="@+id/textDestino"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:text="Destino: Nova Esperança do Piría, Pará, Brasil"
+        android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"
+        app:layout_constraintTop_toBottomOf="@+id/textOrigem" />
+
+    <TextView
+        android:id="@+id/textDia_da_semana"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:text="Dia: Segunda"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toBottomOf="@+id/textDestino"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"/>
+
+    <TextView
+        android:id="@+id/textTaxí_OU_Van"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="Veículo: Taxí"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toBottomOf="@+id/textDia_da_semana"
+        app:layout_constraintStart_toEndOf="@+id/textHorario_Ida" />
+
+    <TextView
+        android:id="@+id/textValor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:text="Preço: 500,00"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toBottomOf="@+id/textDia_da_semana"
+        app:layout_constraintStart_toStartOf="@id/containerComponents"/>
+
+    <TextView
+        android:id="@+id/textHorario_Ida"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="Horário: 15:30"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toBottomOf="@+id/textDia_da_semana"
+        app:layout_constraintStart_toEndOf="@+id/textValor" />
+
+    <!-- Adicione o seguinte atributo para alinhar os elementos lado a lado -->
+    <Space
+        android:id="@+id/space"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/textDestino"
+        app:layout_constraintStart_toEndOf="@+id/textHorario_Ida"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageeditar"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="15dp"
+        android:src="@drawable/ic_editar_rota"
+        app:layout_constraintEnd_toEndOf="@+id/containerComponents"
+        app:layout_constraintTop_toTopOf="@+id/containerComponents"></ImageView>
+
+    <ImageView
+        android:id="@+id/imagedeletar"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="15dp"
+        android:src="@drawable/ic_delete_rota_forever"
+        app:layout_constraintBottom_toBottomOf="@+id/containerComponents"
+        app:layout_constraintEnd_toEndOf="@+id/containerComponents"></ImageView>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/containerComponents">
+    </ImageView>
+</androidx.constraintlayout.widget.ConstraintLayout>

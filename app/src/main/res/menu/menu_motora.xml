@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="activity_tela_principal_motorista"
+    >
+
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/menu"
+            android:title="Meus Dados"
+            android:checkable="false"
+            />
+
+        <item
+            android:id="@+id/suporte"
+            android:title="Fale Conosco"
+            android:checkable="false"
+            />
+
+        <item
+            android:id="@+id/deslogar"
+            android:title="Sair"
+            android:checkable="false"
+            />
+
+    </group>
+
+    <!--Para adiconar mais itens a navbar-->
+    <!--    <item android:title="Suporte">-->
+
+    <!--        <menu>-->
+
+    <!--        </menu>-->
+
+    <!--    </item>-->
+
+
+</menu>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/editOrigem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:hint="Origem"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/editDestino"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:hint="Destino"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/editDiaDaSemana"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:hint="Dia da Semana"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/editVeiculo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:hint="Veículo"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/editPreco"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:hint="Preço"
+        android:inputType="numberDecimal" />
+
+    <EditText
+        android:id="@+id/editHorario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:hint="Horário"
+        android:inputType="text" />
+
+</LinearLayout>

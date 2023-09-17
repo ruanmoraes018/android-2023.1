@@ -7,5 +7,9 @@
     <color name="cinza">#4D4C4C</color>
     <color name="verde">#238E23</color>
     <color name="vermelho">#8b0000</color>
-
+    <color name="amarelo">#FFFF00</color>
+    <color name="laranja">#FFA500</color>
+    <color name="roxo">#800080</color>
+    <color name="rosa">#FF69B4</color>
+    <color name="marrom">#8B4513</color>
 </resources>
