@@ -25,6 +25,8 @@ import com.android.tokentravel.objetos.Motorista;
 import com.android.tokentravel.objetos.Passageiro;
 
 public class FormCadastro extends AppCompatActivity {
+
+    View containnermotora;
     EditText editTextNome, editTextCPF, editTextEmail, editTextSenha, editTextTelefone, editTextCnh, editTextModeloCarro, editTextPlacaVeiculo;
     Spinner spinnerTipo;
     Button botao;
@@ -45,6 +47,7 @@ public class FormCadastro extends AppCompatActivity {
         editTextCnh = findViewById(R.id.edit_cnh);
         editTextModeloCarro = findViewById(R.id.edit_modeloCarro);
         editTextPlacaVeiculo = findViewById(R.id.edit_placaVeiculo);
+        containnermotora = findViewById(R.id.containerComponentsmotora);
 
         spinnerTipo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -57,11 +60,14 @@ public class FormCadastro extends AppCompatActivity {
                     animateViewVisibility(editTextCnh, View.VISIBLE);
                     animateViewVisibility(editTextModeloCarro, View.VISIBLE);
                     animateViewVisibility(editTextPlacaVeiculo, View.VISIBLE);
+                    animateViewVisibility(containnermotora, View.VISIBLE);
                 } else {
                     // Anima a ocultação dos campos adicionais para Passageiro
                     animateViewVisibility(editTextCnh, View.GONE);
                     animateViewVisibility(editTextModeloCarro, View.GONE);
                     animateViewVisibility(editTextPlacaVeiculo, View.GONE);
+                    animateViewVisibility(containnermotora, View.GONE);
+
                 }
             }
 

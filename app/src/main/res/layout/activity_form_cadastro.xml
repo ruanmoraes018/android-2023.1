@@ -36,11 +36,23 @@
         <View
             android:id="@+id/containerComponents"
             style="@style/ContainerComponents2"
+            android:layout_height="520dp"
             android:layout_marginTop="88dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.47"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title_cadastrese" />
+
+        <View
+            android:id="@+id/containerComponentsmotora"
+            style="@style/ContainerComponents2"
+            android:layout_height="750dp"
+            android:layout_marginTop="88dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.47"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title_cadastrese"
+            android:visibility="gone"/>
 
         <EditText
             android:id="@+id/edit_nome"
