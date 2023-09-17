@@ -3,10 +3,13 @@ package com.android.tokentravel;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
@@ -87,6 +90,32 @@ public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterList
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.editar_rotas_cadastradas, null);
+
+        Spinner spinnerOutro;
+        spinnerOutro = dialogView.findViewById(R.id.editVeiculo);
+
+        String[] opcoesOutroSpinner = {"Taxí", "Van"};
+        ArrayAdapter<String> adapterOutroSpinner = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, opcoesOutroSpinner) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView textView = (TextView) view.findViewById(android.R.id.text1);
+                textView.setTextColor(Color.BLACK); // Defina a cor do texto para o spinner
+                return view;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView textView = (TextView) view.findViewById(android.R.id.text1);
+                textView.setTextColor(Color.BLUE); // Defina a cor do texto para o dropdown do spinner
+                return view;
+            }
+        };
+
+        // Defina o adaptador para o spinner
+        spinnerOutro.setAdapter(adapterOutroSpinner);
+
 
         // Aqui você pode inicializar os campos do diálogo com os valores da Rota
         // Por exemplo:
