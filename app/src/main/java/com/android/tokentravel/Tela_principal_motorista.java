@@ -4,12 +4,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 public class Tela_principal_motorista extends AppCompatActivity {
 
@@ -27,6 +30,14 @@ public class Tela_principal_motorista extends AppCompatActivity {
         menuButton = findViewById(R.id.menuButton);
         buttonverrota = findViewById(R.id.button2);
         buttoncadastar_rota = findViewById(R.id.button1);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(Tela_principal_motorista.this);
+        String nomeDoMotorista = sharedPreferences.getString("nomeDoMotoristaLogado", "");
+
+        TextView nomeDoMotoristaTextView = findViewById(R.id.saudacao);
+
+        nomeDoMotoristaTextView.setText("Olá, " + nomeDoMotorista);
+
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

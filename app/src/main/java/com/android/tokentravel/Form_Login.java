@@ -2,11 +2,13 @@ package com.android.tokentravel;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -15,6 +17,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.android.tokentravel.dao.Dao;
+import com.android.tokentravel.objetos.Motorista;
+import com.android.tokentravel.objetos.Pessoa;
 
 
 public class Form_Login extends AppCompatActivity {
@@ -51,20 +55,45 @@ public class Form_Login extends AppCompatActivity {
                     Dao dao = new Dao(getApplicationContext());
                     String tipoUsuario = dao.buscarTipoPessoa(email, senha);
 
+
                     if (tipoUsuario != null) {
                         if (tipoUsuario.equals("Passageiro")) {
-                            // Redirecione para a atividade de passageiro
                             Toast.makeText(getApplicationContext(), "Bem vindo, Passageiro!", Toast.LENGTH_SHORT).show();
+
                             Intent intent = new Intent(Form_Login.this, Navigation_View.class);
                             startActivity(intent);
+
+                            Pessoa nomeUsuario = dao.buscaInfoPassageiro(email);
+                            String nomeDoPassageiroAutenticado = nomeUsuario.getPessoa_nome();
+
+                            String emailDoPassageiroAutenticado = email;
+
+                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("nomeDoPassageiroLogado", nomeDoPassageiroAutenticado);
+                            editor.putString("emailDoPassageiroLogado", emailDoPassageiroAutenticado);
+                            editor.apply();
                         } else if (tipoUsuario.equals("Motorista")) {
-                            // Redirecione para a atividade de motorista
                             Toast.makeText(getApplicationContext(), "Bem vindo, Motorista!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(Form_Login.this, Lista_motoras_dispon.class);
+                            Intent intent = new Intent(Form_Login.this, Tela_principal_motorista.class);
                             startActivity(intent);
+
+                            Pessoa nomeUsuario = dao.buscaInfoMotorista(email);
+                            String nomeDoMotoristaAutenticado = nomeUsuario.getPessoa_nome();
+
+//                            Motorista idMotora = dao.buscaDadosMotorista(email);
+//                            Integer idDoMotoristaAutenticado = idMotora.getId_pessoas();
+
+                            String emailDoMotoristaAutenticado = email;
+
+                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("nomeDoMotoristaLogado", nomeDoMotoristaAutenticado);
+                            editor.putString("emailDoMotoristaLogado", emailDoMotoristaAutenticado);
+//                            editor.putInt("idDoMotoristaLogado", idDoMotoristaAutenticado);
+                            editor.apply();
                         }
                     } else {
-                        // Trate o caso em que a autenticação falhou (exibir uma mensagem de erro, por exemplo)
                         Toast.makeText(getApplicationContext(), "Email/Senha inválidos!", Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {

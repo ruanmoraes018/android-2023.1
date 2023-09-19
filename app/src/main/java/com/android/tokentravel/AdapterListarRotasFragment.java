@@ -1,5 +1,6 @@
 package com.android.tokentravel;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,12 +13,15 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.tokentravel.objetos.Rotas;
+
 import java.util.List;
 
 public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterListarRotasFragment.MyViewHolder> {
-    private List<Rota> mylist;
+    private List<Rotas> mylist;
 
-    public AdapterListarRotasFragment(List<Rota> mylist) {
+    public AdapterListarRotasFragment(List<Rotas> mylist) {
         this.mylist = mylist;
     }
 
@@ -28,14 +32,15 @@ public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterList
         return new MyViewHolder(itemView);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        Rota rota = mylist.get(position);
+        Rotas rota = mylist.get(position);
         holder.textOrigem.setText("Origem: " + rota.getOrigem());
         holder.textDestino.setText("Destino: " + rota.getDestino());
-        holder.textDia_da_semana.setText("Dia: " + rota.getDiaDaSemana());
-        holder.textTaxí_OU_Van.setText("Veículo: " + rota.getVeiculo());
-        holder.textValor.setText("Preço: " + rota.getPreco());
+        holder.textDia_da_semana.setText("Dia: " + rota.isDomingo() + ", " + rota.isSegunda() + ", " + rota.isTerca() + ", " + rota.isQuarta() + ", " + rota.isQuinta() + ", " + rota.isSexta() + ", " + rota.isSabado());
+        holder.textTaxí_OU_Van.setText("Veículo: " + rota.getTipo());
+        holder.textValor.setText("Preço: " + rota.getValor());
         holder.textHorario_Ida.setText("Horário: " + rota.getHorario());
 
         // Configurar um clique no ícone de edição
@@ -86,7 +91,7 @@ public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterList
     }
 
     // Método para exibir o diálogo de edição
-    private void showEditDialog(Context context, final Rota rota) {
+    private void showEditDialog(Context context, final Rotas rota) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = LayoutInflater.from(context);
         View dialogView = inflater.inflate(R.layout.editar_rotas_cadastradas, null);
@@ -143,7 +148,7 @@ public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterList
     }
 
     // Método para exibir o diálogo de exclusão
-    private void showDeleteDialog(Context context, final Rota rota) {
+    private void showDeleteDialog(Context context, final Rotas rota) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Excluir Rota")
                 .setMessage("Tem certeza de que deseja excluir esta rota?")
@@ -167,68 +172,68 @@ public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterList
 }
 
 
-class Rota {
-    private String origem;
-    private String destino;
-    private String diaDaSemana;
-    private String veiculo;
-    private String preco;
-    private String horario;
-
-    public Rota(String origem, String destino, String diaDaSemana, String veiculo, String preco, String horario) {
-        this.origem = origem;
-        this.destino = destino;
-        this.diaDaSemana = diaDaSemana;
-        this.veiculo = veiculo;
-        this.preco = preco;
-        this.horario = horario;
-    }
-
-    public String getOrigem() {
-        return origem;
-    }
-
-    public void setOrigem(String origem) {
-        this.origem = origem;
-    }
-
-    public String getDestino() {
-        return destino;
-    }
-
-    public void setDestino(String destino) {
-        this.destino = destino;
-    }
-
-    public String getDiaDaSemana() {
-        return diaDaSemana;
-    }
-
-    public void setDiaDaSemana(String diaDaSemana) {
-        this.diaDaSemana = diaDaSemana;
-    }
-
-    public String getVeiculo() {
-        return veiculo;
-    }
-
-    public void setVeiculo(String veiculo) {
-        this.veiculo = veiculo;
-    }
-
-    public String getPreco() {
-        return preco;
-    }
-
-    public void setPreco(String preco) {
-        this.preco = preco;
-    }
-
-    public String getHorario() {
-        return horario;
-    }
-
-    public void setHorario(String horario) {
-        this.horario = horario;
-    }
-}
+    //class Rota {
+    //    private String origem;
+    //    private String destino;
+    //    private String diaDaSemana;
+    //    private String veiculo;
+    //    private String preco;
+    //    private String horario;
+    //
+    //    public Rota(String origem, String destino, String diaDaSemana, String veiculo, String preco, String horario) {
+    //        this.origem = origem;
+    //        this.destino = destino;
+    //        this.diaDaSemana = diaDaSemana;
+    //        this.veiculo = veiculo;
+    //        this.preco = preco;
+    //        this.horario = horario;
+    //    }
+    //
+    //    public String getOrigem() {
+    //        return origem;
+    //    }
+    //
+    //    public void setOrigem(String origem) {
+    //        this.origem = origem;
+    //    }
+    //
+    //    public String getDestino() {
+    //        return destino;
+    //    }
+    //
+    //    public void setDestino(String destino) {
+    //        this.destino = destino;
+    //    }
+    //
+    //    public String getDiaDaSemana() {
+    //        return diaDaSemana;
+    //    }
+    //
+    //    public void setDiaDaSemana(String diaDaSemana) {
+    //        this.diaDaSemana = diaDaSemana;
+    //    }
+    //
+    //    public String getVeiculo() {
+    //        return veiculo;
+    //    }
+    //
+    //    public void setVeiculo(String veiculo) {
+    //        this.veiculo = veiculo;
+    //    }
+    //
+    //    public String getPreco() {
+    //        return preco;
+    //    }
+    //
+    //    public void setPreco(String preco) {
+    //        this.preco = preco;
+    //    }
+    //
+    //    public String getHorario() {
+    //        return horario;
+    //    }
+    //
+    //    public void setHorario(String horario) {
+    //        this.horario = horario;
+    //    }
+//}

@@ -52,6 +52,7 @@
         android:background="@color/white" />
 
     <TextView
+        android:id="@+id/nomeDoMotoristaTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Ruan Moraes de Assunção"
@@ -72,10 +73,12 @@
         android:background="@color/white" />
 
     <TextView
+        android:id="@+id/emailDoMotoristaTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="lucas@gmail.com"
         android:textColor="@color/white"
+        android:layout_marginStart="20dp"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginTop="-38dp"

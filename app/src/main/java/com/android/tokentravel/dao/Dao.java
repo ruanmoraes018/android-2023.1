@@ -1,9 +1,6 @@
 package com.android.tokentravel.dao;
 
-import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
-import static java.security.AccessController.getContext;
-
-import android.app.AlertDialog;
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -11,15 +8,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
-
-import androidx.annotation.Nullable;
 
 import com.android.tokentravel.objetos.Motorista;
 import com.android.tokentravel.objetos.Passageiro;
 import com.android.tokentravel.objetos.Pessoa;
-
-import java.security.AccessControlContext;
+import com.android.tokentravel.objetos.Rotas;
 
 public class Dao extends SQLiteOpenHelper {
     public Dao(Context context) {
@@ -50,26 +43,27 @@ public class Dao extends SQLiteOpenHelper {
                 "FOREIGN KEY (id_pessoas) REFERENCES pessoas(pessoas_id));";
         db.execSQL(sql_motoristas);
 
-        String sql_dias_semanas = "CREATE TABLE dias_semanas (dias_semana_id INTEGER PRIMARY KEY, " +
-                "domingo INTEGER, " +
-                "segunda INTEGER, " +
-                "terca INTEGER, " +
-                "quarta INTEGER, " +
-                "quinta INTEGER, " +
-                "sexta INTEGER, " +
-                "sabado INTEGER);";
+        String sql_dias_semanas = "CREATE TABLE dias_semanas (dias_semana_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "domingo TEXT, " +
+                "segunda TEXT, " +
+                "terca TEXT, " +
+                "quarta TEXT, " +
+                "quinta TEXT, " +
+                "sexta TEXT, " +
+                "sabado TEXT);";
         db.execSQL(sql_dias_semanas);
 
-        String sql_criar_rotas = "CREATE TABLE criar_rotas (criar_rotas_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+        String sql_rotas = "CREATE TABLE rotas (criar_rotas_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "origem_rota TEXT, " +
                 "destino_rota TEXT, " +
+                "tipo_veiculo TEXT, " +
                 "valor_rota REAL, " +
-                "horario_rota, " +
+                "horario_rota TEXT, " +
                 "id_motoristas INTEGER, " +
-                "id_dias_semanas INTEGER, " +
+                "id_dias_semanas INTEGER, " +  // Adicione esta coluna
                 "FOREIGN KEY (id_motoristas) REFERENCES motoristas(motoristas_id), " +
                 "FOREIGN KEY (id_dias_semanas) REFERENCES dias_semanas(dias_semana_id));";
-        db.execSQL(sql_criar_rotas);
+        db.execSQL(sql_rotas);
 
         String sql_favoritos = "CREATE TABLE favoritos (favoritos_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "id_passageiros INTEGER, " +
@@ -89,8 +83,8 @@ public class Dao extends SQLiteOpenHelper {
         String sql_upgrade_motoristas = "DROP TABLE IF EXISTS motoristas;";
         db.execSQL(sql_upgrade_motoristas);
 
-        String sql_upgrade_criar_rotas = "DROP TABLE IF EXISTS criar_rotas;";
-        db.execSQL(sql_upgrade_criar_rotas);
+        String sql_upgrade_rotas = "DROP TABLE IF EXISTS rotas;";
+        db.execSQL(sql_upgrade_rotas);
 
         String sql_upgrade_favoritos = "DROP TABLE IF EXISTS favoritos;";
         db.execSQL(sql_upgrade_favoritos);
@@ -99,13 +93,7 @@ public class Dao extends SQLiteOpenHelper {
 
     public String inserirPassageiro(Passageiro passageiro){
         SQLiteDatabase db = getWritableDatabase();
-
-
-
-        // ===========================
         try {
-            // Dados a serem gravados no banco
-            // Inserir dados na tabela pessoas
             ContentValues dados_pessoas = new ContentValues();
             dados_pessoas.put("pessoas_nome", passageiro.getPessoa_nome());
             dados_pessoas.put("pessoas_cpf", passageiro.getPessoa_cpf());
@@ -126,13 +114,9 @@ public class Dao extends SQLiteOpenHelper {
             return "Erro ao cadastrar passageiro!";
         }
     }
-
     public String inserirMotorista(Motorista motorista){
         SQLiteDatabase db = getWritableDatabase();
-
         try {
-            // Dados a serem gravados no banco
-            // Inserir dados na tabela pessoas
             ContentValues dados_pessoas = new ContentValues();
             dados_pessoas.put("pessoas_nome", motorista.getPessoa_nome());
             dados_pessoas.put("pessoas_cpf", motorista.getPessoa_cpf());
@@ -160,31 +144,43 @@ public class Dao extends SQLiteOpenHelper {
     }
 
     public String buscaPessoaEmail(String email){
-
         String sql_busca_pessoa =  "SELECT * FROM pessoas WHERE pessoas_email = " + "'" + email + "';";
         SQLiteDatabase db = getReadableDatabase();
 
         Cursor c = db.rawQuery(sql_busca_pessoa, null);
-
         if(c.moveToNext()){
             return "resultado";
         }else{
             return null;
         }
     }
-
-    public String buscaPessoaSenha(String senha){
-
-        String sql_busca_senha =  "SELECT * FROM pessoas WHERE pessoas_senha = " + "'" + senha + "';";
+    public Pessoa buscaInfoPassageiro(String email){
         SQLiteDatabase db = getReadableDatabase();
+        String sql_busca_passageiro =  "SELECT pessoas_nome, pessoas_email FROM pessoas WHERE pessoas_tipo = 'Passageiro' AND pessoas_email = ?;";
+        Cursor c = db.rawQuery(sql_busca_passageiro, new String[]{email});
 
-        Cursor c = db.rawQuery(sql_busca_senha, null);
-
-        if(c.moveToNext()){
-            return "resultado";
-        }else{
-            return null;
+        if (c.moveToFirst()) {
+            String nomeDoPassageiro = c.getString(0);
+            String emailDoPassageiro = c.getString(1);
+            c.close();
+            return new Pessoa(nomeDoPassageiro, null, emailDoPassageiro, null, null, null);
         }
+        c.close();
+        return null;
+    }
+    public Pessoa buscaInfoMotorista(String email){
+        SQLiteDatabase db = getReadableDatabase();
+        String sql_busca_motorista =  "SELECT pessoas_nome, pessoas_email FROM pessoas WHERE pessoas_tipo = 'Motorista' AND pessoas_email = ?;";
+        Cursor c = db.rawQuery(sql_busca_motorista, new String[]{email});
+
+        if (c.moveToFirst()) {
+            String nomeDoMotorista = c.getString(0);
+            String emailDoMotorista = c.getString(1);
+            c.close();
+            return new Pessoa(nomeDoMotorista, null, emailDoMotorista, null, null, null);
+        }
+        c.close();
+        return null;
     }
     public String buscarTipoPessoa(String email, String senha) {
         SQLiteDatabase db = getReadableDatabase();
@@ -196,53 +192,116 @@ public class Dao extends SQLiteOpenHelper {
             cursor.close();
             return tipo;
         }
-
         cursor.close();
         return null;
     }
-
-
     public String buscaPessoaCPF(String cpf) {
         String buscaPessoaPorCPF = "SELECT * FROM pessoas WHERE pessoas_cpf = '" + cpf + "';";
         SQLiteDatabase db = getReadableDatabase();
 
         Cursor c = db.rawQuery(buscaPessoaPorCPF, null);
-
         if(c.moveToNext()){
             return "resultado1";
         }else{
             return null;
         }
     }
-    public String autenticarUsuario(String email, String senha) {
+    public Motorista buscaDadosMotorista(String email){
         SQLiteDatabase db = getReadableDatabase();
+        String sql_busca_motorista =  "SELECT id_pessoas FROM motoristas WHERE pessoas_tipo = 'Motorista' AND pessoas_email = ?;";
+        Cursor c = db.rawQuery(sql_busca_motorista, new String[]{email});
 
-        // Verifique se o usuário é um passageiro
-        String queryPassageiro = "SELECT pessoas_tipo FROM pessoas WHERE pessoas_email = ? AND pessoas_senha = ?";
-        Cursor cursorPassageiro = db.rawQuery(queryPassageiro, new String[]{email, senha});
-
-        if (cursorPassageiro.moveToFirst()) {
-            String tipo = cursorPassageiro.getString(0);
-            cursorPassageiro.close();
-            return tipo;
+        if (c.moveToFirst()) {
+            String nomeDoMotorista = c.getString(0);
+            String emailDoMotorista = c.getString(1);
+            c.close();
+            return new Motorista(nomeDoMotorista, null, emailDoMotorista, null, null, null, null, null, null);
         }
-
-        cursorPassageiro.close();
-
-        // Verifique se o usuário é um motorista
-        String queryMotorista = "SELECT pessoas_tipo FROM motoristas INNER JOIN pessoas ON motoristas.id_pessoas = pessoas.pessoas_id WHERE pessoas.pessoas_email = ? AND pessoas.pessoas_senha = ?";
-        Cursor cursorMotorista = db.rawQuery(queryMotorista, new String[]{email, senha});
-
-        if (cursorMotorista.moveToFirst()) {
-            String tipo = cursorMotorista.getString(0);
-            cursorMotorista.close();
-            return tipo;
-        }
-
-        cursorMotorista.close();
-
-        // Se nenhum tipo de usuário for concentration, retorne null
+        c.close();
         return null;
     }
+    public long inserirRota(Rotas rota) {
+        SQLiteDatabase db = getWritableDatabase();
+        try {
+            // Inserir os dias da semana na tabela dias_semanas
+            ContentValues diasSemanas = new ContentValues();
+            diasSemanas.put("domingo", rota.isDomingo() ? "true" : "false");
+            diasSemanas.put("segunda", rota.isSegunda() ? "true" : "false");
+            diasSemanas.put("terca", rota.isTerca() ? "true" : "false");
+            diasSemanas.put("quarta", rota.isQuarta() ? "true" : "false");
+            diasSemanas.put("quinta", rota.isQuinta() ? "true" : "false");
+            diasSemanas.put("sexta", rota.isSexta() ? "true" : "false");
+            diasSemanas.put("sabado", rota.isSabado() ? "true" : "false");
+
+            long diasSemanasId = db.insert("dias_semanas", null, diasSemanas);
+
+            // Inserir a rota na tabela rotas
+            ContentValues rotas = new ContentValues();
+            rotas.put("origem_rota", rota.getOrigem());
+            rotas.put("destino_rota", rota.getDestino());
+            rotas.put("tipo_veiculo", rota.getTipo());
+            rotas.put("valor_rota", rota.getValor());
+            rotas.put("horario_rota", rota.getHorario());
+            rotas.put("id_motoristas", rota.getId_motorista());
+            rotas.put("id_dias_semanas", diasSemanasId);
+
+            long rotaId = db.insert("rotas", null, rotas);
+
+            db.close();
+
+            return rotaId + 007;
+        } catch (SQLiteException e) {
+            Log.e("DAO", e.getMessage());
+            return -1; // Retorne um valor de erro adequado
+        }
+    }
+
+    public Rotas buscaRotasMotorista(String email) {
+        SQLiteDatabase db = getReadableDatabase();
+        String sql_busca_motorista = "SELECT r.*, ds.* FROM rotas r " +
+                "INNER JOIN dias_semanas ds ON r.dias_semana_id = ds.dias_semana_id " +
+                "WHERE r.id_motoristas = (SELECT id_pessoas FROM pessoas WHERE pessoas_email = ?);";
+
+        Cursor c = db.rawQuery(sql_busca_motorista, new String[]{email});
+
+        if (c.moveToFirst()) {
+            String origemRota = c.getString(0);
+            String destinoRota = c.getString(1);
+            String tipoRota = c.getString(2);
+            float valorRota = c.getFloat(3);
+            String horarioRota = c.getString(4);
+            int idMotora = c.getInt(5);
+
+            boolean domingo = c.getExtras().getBoolean("");
+            boolean segunda = c.getExtras().getBoolean("");
+            boolean terca = c.getExtras().getBoolean("");
+            boolean quarta = c.getExtras().getBoolean("");
+            boolean quinta = c.getExtras().getBoolean("");
+            boolean sexta = c.getExtras().getBoolean("");
+            boolean sabado = c.getExtras().getBoolean("");
+
+            c.close();
+
+            return new Rotas(
+                    origemRota,
+                    destinoRota,
+                    tipoRota,
+                    valorRota,
+                    horarioRota,
+                    idMotora,
+                    domingo,
+                    segunda,
+                    terca,
+                    quarta,
+                    quinta,
+                    sexta,
+                    sabado
+            );
+        }
+        c.close();
+        return null;
+    }
+
+
 
 }
