@@ -1,4 +1,5 @@
 package com.android.tokentravel.objetos;
+import java.util.List;
 
 public class Rotas {
     Integer rota_id;
@@ -9,6 +10,7 @@ public class Rotas {
     String horario;
     Integer id_motorista;
     boolean domingo, segunda, terca, quarta, quinta, sexta, sabado;
+    List<String> diasAtivos; // Adicione um campo para armazenar os nomes dos dias ativos
 
     public Rotas(String origem, String destino, String tipo, float valor, String horario, Integer id_motorista, boolean domingo, boolean segunda, boolean terca, boolean quarta, boolean quinta, boolean sexta, boolean sabado) {
         this.origem = origem;
@@ -24,6 +26,25 @@ public class Rotas {
         this.quinta = quinta;
         this.sexta = sexta;
         this.sabado = sabado;
+    }
+
+    // Construtor alternativo que aceita a lista de nomes dos dias ativos
+    public Rotas(String origem, String destino, String tipo, float valor, String horario, Integer id_motorista, List<String> diasAtivos) {
+        this.origem = origem;
+        this.destino = destino;
+        this.tipo = tipo;
+        this.valor = valor;
+        this.horario = horario;
+        this.id_motorista = id_motorista;
+        this.diasAtivos = diasAtivos; // Inicialize o campo de lista de dias ativos
+        // Defina as variáveis booleanas com base nos nomes dos dias ativos
+        this.domingo = diasAtivos.contains("domingo");
+        this.segunda = diasAtivos.contains("segunda");
+        this.terca = diasAtivos.contains("terca");
+        this.quarta = diasAtivos.contains("quarta");
+        this.quinta = diasAtivos.contains("quinta");
+        this.sexta = diasAtivos.contains("sexta");
+        this.sabado = diasAtivos.contains("sabado");
     }
 
     public Integer getRota_id() {

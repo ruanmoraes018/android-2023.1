@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,7 +45,35 @@ public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterList
         Rotas rota = mylist.get(position);
         holder.textOrigem.setText("Origem: " + rota.getOrigem());
         holder.textDestino.setText("Destino: " + rota.getDestino());
-        holder.textDia_da_semana.setText("Dia: " + rota.isDomingo() + ", " + rota.isSegunda() + ", " + rota.isTerca() + ", " + rota.isQuarta() + ", " + rota.isQuinta() + ", " + rota.isSexta() + ", " + rota.isSabado());
+
+        // Crie uma lista de nomes de dias ativos com base nas variáveis booleanas
+        List<String> diasAtivos = new ArrayList<>();
+        if (rota.isDomingo()) {
+            diasAtivos.add("Domingo");
+        }
+        if (rota.isSegunda()) {
+            diasAtivos.add("Segunda-feira");
+        }
+        if (rota.isTerca()) {
+            diasAtivos.add("Terça-feira");
+        }
+        if (rota.isQuarta()) {
+            diasAtivos.add("Quarta-feira");
+        }
+        if (rota.isQuinta()) {
+            diasAtivos.add("Quinta-feira");
+        }
+        if (rota.isSexta()) {
+            diasAtivos.add("Sexta-feira");
+        }
+        if (rota.isSabado()) {
+            diasAtivos.add("Sábado");
+        }
+
+        // Converta a lista de nomes dos dias em uma única string
+        String diasString = TextUtils.join(", ", diasAtivos);
+
+        holder.textDia_da_semana.setText("Dia: " + diasString);
         holder.textTaxí_OU_Van.setText("Veículo: " + rota.getTipo());
         holder.textValor.setText("Preço: " + rota.getValor());
         holder.textHorario_Ida.setText("Horário: " + rota.getHorario());

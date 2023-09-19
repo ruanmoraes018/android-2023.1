@@ -15,6 +15,9 @@ import com.android.tokentravel.objetos.Pessoa;
 import com.android.tokentravel.objetos.Rotas;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Dao extends SQLiteOpenHelper {
     public Dao(Context context) {
@@ -290,35 +293,53 @@ public class Dao extends SQLiteOpenHelper {
             @SuppressLint("Range") String horarioRota = c.getString(c.getColumnIndex("horario_rota"));
             @SuppressLint("Range") int idMotorista = c.getInt(c.getColumnIndex("id_motoristas"));
 
-            @SuppressLint("Range") boolean domingo = c.getString(c.getColumnIndex("domingo")).equals("true");
-            @SuppressLint("Range") boolean segunda = c.getString(c.getColumnIndex("segunda")).equals("true");
-            @SuppressLint("Range") boolean terca = c.getString(c.getColumnIndex("terca")).equals("true");
-            @SuppressLint("Range") boolean quarta = c.getString(c.getColumnIndex("quarta")).equals("true");
-            @SuppressLint("Range") boolean quinta = c.getString(c.getColumnIndex("quinta")).equals("true");
-            @SuppressLint("Range") boolean sexta = c.getString(c.getColumnIndex("sexta")).equals("true");
-            @SuppressLint("Range") boolean sabado = c.getString(c.getColumnIndex("sabado")).equals("true");
+            @SuppressLint("Range")
+            boolean domingo = c.getString(c.getColumnIndex("domingo")).equals("true");
+            @SuppressLint("Range")
+            boolean segunda = c.getString(c.getColumnIndex("segunda")).equals("true");
+            @SuppressLint("Range")
+            boolean terca = c.getString(c.getColumnIndex("terca")).equals("true");
+            @SuppressLint("Range")
+            boolean quarta = c.getString(c.getColumnIndex("quarta")).equals("true");
+            @SuppressLint("Range")
+            boolean quinta = c.getString(c.getColumnIndex("quinta")).equals("true");
+            @SuppressLint("Range")
+            boolean sexta = c.getString(c.getColumnIndex("sexta")).equals("true");
+            @SuppressLint("Range")
+            boolean sabado = c.getString(c.getColumnIndex("sabado")).equals("true");
 
+// Mapeia os nomes dos dias da semana às variáveis booleanas
+            Map<String, Boolean> diasSemana = new HashMap<>();
+            diasSemana.put("domingo", domingo);
+            diasSemana.put("segunda", segunda);
+            diasSemana.put("terca", terca);
+            diasSemana.put("quarta", quarta);
+            diasSemana.put("quinta", quinta);
+            diasSemana.put("sexta", sexta);
+            diasSemana.put("sabado", sabado);
 
-            // Resto do código permanece inalterado
+// Crie uma lista para armazenar os nomes dos dias da semana que são verdadeiros
+            List<String> diasAtivos = new ArrayList<>();
+            for (Map.Entry<String, Boolean> entry : diasSemana.entrySet()) {
+                if (entry.getValue()) {
+                    diasAtivos.add(entry.getKey());
+                }
+            }
 
+// Resto do código permanece inalterado
 
-        Rotas rota = new Rotas(
+            Rotas rota = new Rotas(
                     origemRota,
                     destinoRota,
                     tipoRota,
                     valorRota,
                     horarioRota,
                     idMotorista,
-                    domingo,
-                    segunda,
-                    terca,
-                    quarta,
-                    quinta,
-                    sexta,
-                    sabado
+                    diasAtivos // Aqui, passamos a lista de nomes dos dias ativos
             );
 
             rotasList.add(rota);
+
         }
 
         c.close();
