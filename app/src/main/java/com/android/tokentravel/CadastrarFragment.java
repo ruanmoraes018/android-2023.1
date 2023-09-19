@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.android.tokentravel.dao.Dao;
@@ -69,12 +70,10 @@ public class CadastrarFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
-                    // Supondo que você já tenha obtido os valores dos campos de entrada
-
                     // Inicialize os campos de entrada aqui
                     editTextOrigem = view.findViewById(R.id.edit_origem);
                     editTextDestino = view.findViewById(R.id.edit_destino);
-                    tipoVeiculo = view.findViewById(R.id.edit_tipo_veiculo);
+                    spinnerOutro = view.findViewById(R.id.edit_tipo_veiculo); // Use o spinner personalizado
                     editTextValor = view.findViewById(R.id.edit_valor);
                     editTextHorarioIda = view.findViewById(R.id.edit_horario_ida);
                     checkBoxDomingo = view.findViewById(R.id.checkbox_sunday);
@@ -91,7 +90,7 @@ public class CadastrarFragment extends Fragment {
                     Rotas rotas = new Rotas(
                             editTextOrigem.getText().toString(),
                             editTextDestino.getText().toString(),
-                            tipoVeiculo.getSelectedItem().toString(),
+                            spinnerOutro.getSelectedItem().toString(), // Use o spinner personalizado
                             Float.parseFloat(editTextValor.getText().toString()),
                             editTextHorarioIda.getText().toString(),
                             idDoMotoristaLogado,
@@ -108,6 +107,43 @@ public class CadastrarFragment extends Fragment {
                     long rotaId = dao.inserirRota(rotas);
 
                     if (rotaId != -1) {
+
+//                        // Criar um Bundle e adicionar os valores das variáveis
+//                        Bundle bundle = new Bundle();
+//                        bundle.putString("origemDaRota", editTextOrigem.getText().toString());
+//                        bundle.putString("destinoDaRota", editTextDestino.getText().toString());
+//                        bundle.putString("tipoDaRota", spinnerOutro.getSelectedItem().toString());
+//                        bundle.putFloat("valorDaRota", Float.parseFloat(editTextValor.getText().toString()));
+//                        bundle.putString("horarioDaRota", editTextHorarioIda.getText().toString());
+//                        bundle.putInt("idDoMotora", idDoMotoristaLogado);
+//                        bundle.putBoolean("domingo", checkBoxDomingo.isChecked());
+//                        bundle.putBoolean("segundaFeira", checkBoxSegunda.isChecked());
+//                        bundle.putBoolean("tercaFeira", checkBoxTerca.isChecked());
+//                        bundle.putBoolean("quartaFeira", checkBoxQuarta.isChecked());
+//                        bundle.putBoolean("quintaFeira", checkBoxQuinta.isChecked());
+//                        bundle.putBoolean("sextaFeira", checkBoxSexta.isChecked());
+//                        bundle.putBoolean("sabado", checkBoxSabado.isChecked());
+//
+//// Obtém o FragmentManager
+//                        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+//
+//                        // Inicializa a VerRotasFragment com os argumentos
+//                        VerRotasFragment verRotasFragment = new VerRotasFragment();
+//                        verRotasFragment.setArguments(bundle);
+//
+//                        // Começa uma transação de fragmento
+//                        FragmentTransaction transaction = fragmentManager.beginTransaction();
+//
+//                        // Adiciona a VerRotasFragment à pilha de fragmentos
+//                        transaction.addToBackStack(null);
+//
+//                        // Substitui o fragmento atual pelo VerRotasFragment
+//                        transaction.replace(R.id.fragment_cadastrarrota, verRotasFragment);
+//
+//                        // Confirma a transação
+//                        transaction.commit();
+
+
                         // Somente substitua o fragmento se a rota for cadastrada com sucesso
                         VerRotasFragment verRotasFragment = new VerRotasFragment();
                         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
@@ -129,8 +165,8 @@ public class CadastrarFragment extends Fragment {
                     e.printStackTrace(); // Isso imprimirá a exceção no logcat para fins de depuração
                 }
             }
-
         });
+
 
         return view;
     }

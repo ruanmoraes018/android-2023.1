@@ -8,11 +8,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
+import android.database.Cursor;
 import com.android.tokentravel.objetos.Motorista;
 import com.android.tokentravel.objetos.Passageiro;
 import com.android.tokentravel.objetos.Pessoa;
 import com.android.tokentravel.objetos.Rotas;
+
+import java.util.ArrayList;
 
 public class Dao extends SQLiteOpenHelper {
     public Dao(Context context) {
@@ -168,6 +170,21 @@ public class Dao extends SQLiteOpenHelper {
         c.close();
         return null;
     }
+
+    public String autenticarUsuario(String email, String senha) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT pessoas_tipo FROM pessoas WHERE pessoas_email = ? AND pessoas_senha = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{email, senha});
+
+        if (cursor.moveToFirst()) {
+            String tipo = cursor.getString(0);
+            cursor.close();
+            return tipo;
+        }
+        cursor.close();
+        return null;
+    }
+
     public Pessoa buscaInfoMotorista(String email){
         SQLiteDatabase db = getReadableDatabase();
         String sql_busca_motorista =  "SELECT pessoas_nome, pessoas_email FROM pessoas WHERE pessoas_tipo = 'Motorista' AND pessoas_email = ?;";
@@ -256,39 +273,42 @@ public class Dao extends SQLiteOpenHelper {
         }
     }
 
-    public Rotas buscaRotasMotorista(String email) {
+    public ArrayList<Rotas> buscaRotasMotorista(int motoristaId) {
+        ArrayList<Rotas> rotasList = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         String sql_busca_motorista = "SELECT r.*, ds.* FROM rotas r " +
-                "INNER JOIN dias_semanas ds ON r.dias_semana_id = ds.dias_semana_id " +
-                "WHERE r.id_motoristas = (SELECT id_pessoas FROM pessoas WHERE pessoas_email = ?);";
+                "INNER JOIN dias_semanas ds ON r.id_dias_semanas = ds.dias_semana_id " +
+                "WHERE r.id_motoristas = ?";
 
-        Cursor c = db.rawQuery(sql_busca_motorista, new String[]{email});
+        Cursor c = db.rawQuery(sql_busca_motorista, new String[]{String.valueOf(motoristaId)});
 
-        if (c.moveToFirst()) {
-            String origemRota = c.getString(0);
-            String destinoRota = c.getString(1);
-            String tipoRota = c.getString(2);
-            float valorRota = c.getFloat(3);
-            String horarioRota = c.getString(4);
-            int idMotora = c.getInt(5);
+        while (c.moveToNext()) {
+            @SuppressLint("Range") String origemRota = c.getString(c.getColumnIndex("origem_rota"));
+            @SuppressLint("Range") String destinoRota = c.getString(c.getColumnIndex("destino_rota"));
+            @SuppressLint("Range") String tipoRota = c.getString(c.getColumnIndex("tipo_veiculo"));
+            @SuppressLint("Range") float valorRota = c.getFloat(c.getColumnIndex("valor_rota"));
+            @SuppressLint("Range") String horarioRota = c.getString(c.getColumnIndex("horario_rota"));
+            @SuppressLint("Range") int idMotorista = c.getInt(c.getColumnIndex("id_motoristas"));
 
-            boolean domingo = c.getExtras().getBoolean("");
-            boolean segunda = c.getExtras().getBoolean("");
-            boolean terca = c.getExtras().getBoolean("");
-            boolean quarta = c.getExtras().getBoolean("");
-            boolean quinta = c.getExtras().getBoolean("");
-            boolean sexta = c.getExtras().getBoolean("");
-            boolean sabado = c.getExtras().getBoolean("");
+            @SuppressLint("Range") boolean domingo = c.getString(c.getColumnIndex("domingo")).equals("true");
+            @SuppressLint("Range") boolean segunda = c.getString(c.getColumnIndex("segunda")).equals("true");
+            @SuppressLint("Range") boolean terca = c.getString(c.getColumnIndex("terca")).equals("true");
+            @SuppressLint("Range") boolean quarta = c.getString(c.getColumnIndex("quarta")).equals("true");
+            @SuppressLint("Range") boolean quinta = c.getString(c.getColumnIndex("quinta")).equals("true");
+            @SuppressLint("Range") boolean sexta = c.getString(c.getColumnIndex("sexta")).equals("true");
+            @SuppressLint("Range") boolean sabado = c.getString(c.getColumnIndex("sabado")).equals("true");
 
-            c.close();
 
-            return new Rotas(
+            // Resto do código permanece inalterado
+
+
+        Rotas rota = new Rotas(
                     origemRota,
                     destinoRota,
                     tipoRota,
                     valorRota,
                     horarioRota,
-                    idMotora,
+                    idMotorista,
                     domingo,
                     segunda,
                     terca,
@@ -297,10 +317,30 @@ public class Dao extends SQLiteOpenHelper {
                     sexta,
                     sabado
             );
+
+            rotasList.add(rota);
+        }
+
+        c.close();
+        return rotasList;
+    }
+
+    public int buscaIdMotorista(String email) {
+        SQLiteDatabase db = getReadableDatabase();
+        String sql_busca_motorista = "SELECT id_pessoas FROM motoristas " +
+                "INNER JOIN pessoas ON motoristas.id_pessoas = pessoas.pessoas_id " +
+                "WHERE pessoas_email = ?;";
+        Cursor c = db.rawQuery(sql_busca_motorista, new String[]{email});
+
+        if (c.moveToFirst()) {
+            int idMotorista = c.getInt(0);
+            c.close();
+            return idMotorista;
         }
         c.close();
-        return null;
+        return -1; // Retorna -1 se não encontrar o motorista
     }
+
 
 
 

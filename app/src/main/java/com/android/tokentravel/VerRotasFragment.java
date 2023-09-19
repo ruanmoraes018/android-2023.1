@@ -6,92 +6,126 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.android.tokentravel.dao.Dao;
 import com.android.tokentravel.objetos.Rotas;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class VerRotasFragment extends Fragment {
     private RecyclerView recyclerViewRotas;
     private AdapterListarRotasFragment adapter;
     private SharedPreferences sharedPreferences;
-    private String origemDaRotaCriada;
-    private String destinoDaRotaCriada;
-    private String tipoDaRotaCriada;
-    private float valorDaRotaCriada;
-    private String horarioDaRotaCriada;
-    private Integer idDoMotoraDaRotaCriada;
-    private boolean diaDomingo;
-    private boolean diaSegunda;
-    private boolean diaTerca;
-    private boolean diaQuarta;
-    private boolean diaQuinta;
-    private boolean diaSexta;
-    private boolean diaSabado;
-    private String diasDaSemana;
-    private String valorDaRotaCriadaStr;
-
+    private Dao dao; // Certifique-se de inicializar o objeto Dao em algum lugar
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_ver_rotas, container, false);
 
-        // Inicialize as variáveis dentro do onCreateView, onde o contexto está disponível
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        origemDaRotaCriada = sharedPreferences.getString("origemDaRota", "");
-        destinoDaRotaCriada = sharedPreferences.getString("destinoDaRota", "");
-        tipoDaRotaCriada = sharedPreferences.getString("tipoDaRota", "");
-        valorDaRotaCriada = sharedPreferences.getFloat("valorDaRota", 0);
-        horarioDaRotaCriada = sharedPreferences.getString("horarioDaRota", "");
-        idDoMotoraDaRotaCriada = sharedPreferences.getInt("idDoMotora", 0);
-        diaDomingo = sharedPreferences.getBoolean("domingo", true);
-        diaSegunda = sharedPreferences.getBoolean("segundaFeira", true);
-        diaTerca = sharedPreferences.getBoolean("tercaFeira", true);
-        diaQuarta = sharedPreferences.getBoolean("quartaFeira", true);
-        diaQuinta = sharedPreferences.getBoolean("quintaFeira", true);
-        diaSexta = sharedPreferences.getBoolean("sextaFeira", true);
-        diaSabado = sharedPreferences.getBoolean("sabado", true);
-//        diasDaSemana = String.format(
-//                "%b,%b,%b,%b,%b,%b,%b",
-//                diaDomingo, diaSegunda, diaTerca, diaQuarta, diaQuinta, diaSexta, diaSabado
-//        );
-//        valorDaRotaCriadaStr = Float.toString(valorDaRotaCriada);
-
         recyclerViewRotas = view.findViewById(R.id.recyclerViewVerRotasCdastradas);
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerViewRotas.setLayoutManager(layoutManager);
+        // Inicialize o objeto dao passando o contexto do fragmento
+        dao = new Dao(getContext());
+        // Obtenha o ID do motorista logado das preferências compartilhadas
+        int idMotoristaLogado = sharedPreferences.getInt("idDoMotoristaLogado", -1);
 
-        adapter = new AdapterListarRotasFragment(getList());
-        recyclerViewRotas.setAdapter(adapter);
+        // Verifique se o ID do motorista é válido (-1 indica que não foi encontrado)
+        if (idMotoristaLogado != -1) {
+            // Chame a função para buscar as rotas do motorista passando o ID do motorista logado
+            List<Rotas> rotas = buscaRotasDoMotorista(idMotoristaLogado);
 
+            adapter = new AdapterListarRotasFragment();
+            recyclerViewRotas.setAdapter(adapter);
 
+            // Configure o Adapter com os dados recuperados
+            adapter.setRotasList(rotas);
+        } else {
+            // Trate o caso em que o ID do motorista não foi encontrado
+            Toast.makeText(getContext(), "ID do Motorista não encontrado", Toast.LENGTH_SHORT).show();
+        }
 
         return view;
     }
 
-    private List<Rotas> getList() {
-        List<Rotas> rotas = new ArrayList<>();
+    private List<Rotas> buscaRotasDoMotorista(int idMotorista) {
+        // Use a função do banco de dados para buscar as rotas do motorista com base no ID
+        List<Rotas> rotas = dao.buscaRotasMotorista(idMotorista);
 
-    rotas.add(new Rotas(origemDaRotaCriada, destinoDaRotaCriada, tipoDaRotaCriada, valorDaRotaCriada, horarioDaRotaCriada, idDoMotoraDaRotaCriada, diaDomingo, diaSegunda, diaTerca, diaQuarta, diaQuinta, diaSexta, diaSabado));
-//        rotas.add(new Rota("Ananindeua, Pará, Brasil", "Castanhal, Pará, Brasil", "Terça", "Van", "80,00", "09:45"));
-//        rotas.add(new Rota("Belém, Pará, Brasil", "Salinópolis, Pará, Brasil", "Quarta", "Taxí", "200,00", "14:00"));
-//        rotas.add(new Rota("Ananindeua, Pará, Brasil", "Paragominas, Pará, Brasil", "Quinta", "Van", "120,00", "17:15"));
-//        rotas.add(new Rota("Marituba, Pará, Brasil", "Barcarena, Pará, Brasil", "Sexta", "Taxí", "90,00", "10:30"));
-//        rotas.add(new Rota("Belém, Pará, Brasil", "Marabá, Pará, Brasil", "Sábado", "Van", "280,00", "13:45"));
-//        rotas.add(new Rota("Ananindeua, Pará, Brasil", "Abaetetuba, Pará, Brasil", "Domingo", "Taxí", "60,00", "16:00"));
-
-        // Rotas fictícias
+        // Verifique se a lista retornada é nula ou vazia
+        if (rotas == null || rotas.isEmpty()) {
+            return new ArrayList<>(); // Inicialize e retorne uma lista vazia
+        }
 
         return rotas;
     }
-
 }
 
+
+
+
+//
+//public class VerRotasFragment extends Fragment {
+//    private RecyclerView recyclerViewRotas;
+//    private AdapterListarRotasFragment adapter;
+//    private SharedPreferences sharedPreferences;
+//
+//
+//
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+//        View view = inflater.inflate(R.layout.fragment_ver_rotas, container, false);
+//
+//        // Inicialize o SharedPreferences dentro do onCreateView, onde o contexto está disponível
+//        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+//
+//        recyclerViewRotas = view.findViewById(R.id.recyclerViewVerRotasCdastradas);
+//
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+//        recyclerViewRotas.setLayoutManager(layoutManager);
+//
+//        adapter = new AdapterListarRotasFragment(getListFromArguments());
+//        recyclerViewRotas.setAdapter(adapter);
+//
+//        return view;
+//    }
+//
+//    private List<Rotas> getListFromArguments() {
+//        List<Rotas> rotas = new ArrayList<>();
+//
+//        // Recupere os valores do Bundle
+//        Bundle args = getArguments();
+//        if (args != null) {
+//            String origemDaRotaCriada = args.getString("origemDaRota", "");
+//            String destinoDaRotaCriada = args.getString("destinoDaRota", "");
+//            String tipoDaRotaCriada = args.getString("tipoDaRota", "");
+//            float valorDaRotaCriada = args.getFloat("valorDaRota", 0);
+//            String horarioDaRotaCriada = args.getString("horarioDaRota", "");
+//            int idDoMotoraDaRotaCriada = args.getInt("idDoMotora", 0);
+//            boolean diaDomingo = args.getBoolean("domingo", true);
+//            boolean diaSegunda = args.getBoolean("segundaFeira", true);
+//            boolean diaTerca = args.getBoolean("tercaFeira", true);
+//            boolean diaQuarta = args.getBoolean("quartaFeira", true);
+//            boolean diaQuinta = args.getBoolean("quintaFeira", true);
+//            boolean diaSexta = args.getBoolean("sextaFeira", true);
+//            boolean diaSabado = args.getBoolean("sabado", true);
+//
+//            // Crie uma instância de Rotas com os valores recuperados e adicione à lista
+//            Rotas rota = new Rotas(
+//                    origemDaRotaCriada, destinoDaRotaCriada, tipoDaRotaCriada, valorDaRotaCriada,
+//                    horarioDaRotaCriada, idDoMotoraDaRotaCriada, diaDomingo, diaSegunda, diaTerca,
+//                    diaQuarta, diaQuinta, diaSexta, diaSabado
+//            );
+//
+//            rotas.add(rota);
+//        }
+//
+//        return rotas;
+//    }
+//}
+//

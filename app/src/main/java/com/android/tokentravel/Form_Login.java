@@ -53,8 +53,7 @@ public class Form_Login extends AppCompatActivity {
                     String senha = editTextSenha.getText().toString();
 
                     Dao dao = new Dao(getApplicationContext());
-                    String tipoUsuario = dao.buscarTipoPessoa(email, senha);
-
+                    String tipoUsuario = dao.autenticarUsuario(email, senha);
 
                     if (tipoUsuario != null) {
                         if (tipoUsuario.equals("Passageiro")) {
@@ -78,11 +77,10 @@ public class Form_Login extends AppCompatActivity {
                             Intent intent = new Intent(Form_Login.this, Tela_principal_motorista.class);
                             startActivity(intent);
 
+                            int idDoMotoristaAutenticado = dao.buscaIdMotorista(email);
+
                             Pessoa nomeUsuario = dao.buscaInfoMotorista(email);
                             String nomeDoMotoristaAutenticado = nomeUsuario.getPessoa_nome();
-
-//                            Motorista idMotora = dao.buscaDadosMotorista(email);
-//                            Integer idDoMotoristaAutenticado = idMotora.getId_pessoas();
 
                             String emailDoMotoristaAutenticado = email;
 
@@ -90,7 +88,7 @@ public class Form_Login extends AppCompatActivity {
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString("nomeDoMotoristaLogado", nomeDoMotoristaAutenticado);
                             editor.putString("emailDoMotoristaLogado", emailDoMotoristaAutenticado);
-//                            editor.putInt("idDoMotoristaLogado", idDoMotoristaAutenticado);
+                            editor.putInt("idDoMotoristaLogado", idDoMotoristaAutenticado);
                             editor.apply();
                         }
                     } else {
@@ -102,6 +100,7 @@ public class Form_Login extends AppCompatActivity {
                 }
             }
         });
+
     }
     private void IniciarComponentes(){
         text_tela_cadastro = findViewById(R.id.text_tela_cadastro);

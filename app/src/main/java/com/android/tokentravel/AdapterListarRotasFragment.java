@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +17,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.tokentravel.objetos.Rotas;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterListarRotasFragment.MyViewHolder> {
     private List<Rotas> mylist;
 
-    public AdapterListarRotasFragment(List<Rotas> mylist) {
-        this.mylist = mylist;
+    public AdapterListarRotasFragment() {
+        this.mylist = new ArrayList<>();
+    }
+
+    public void setRotasList(List<Rotas> rotasList) {
+        this.mylist = rotasList;
+        notifyDataSetChanged(); // Notifique o adaptador sobre a alteração nos dados
     }
 
     @Override
@@ -32,7 +39,6 @@ public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterList
         return new MyViewHolder(itemView);
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Rotas rota = mylist.get(position);
@@ -171,69 +177,3 @@ public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterList
     }
 }
 
-
-    //class Rota {
-    //    private String origem;
-    //    private String destino;
-    //    private String diaDaSemana;
-    //    private String veiculo;
-    //    private String preco;
-    //    private String horario;
-    //
-    //    public Rota(String origem, String destino, String diaDaSemana, String veiculo, String preco, String horario) {
-    //        this.origem = origem;
-    //        this.destino = destino;
-    //        this.diaDaSemana = diaDaSemana;
-    //        this.veiculo = veiculo;
-    //        this.preco = preco;
-    //        this.horario = horario;
-    //    }
-    //
-    //    public String getOrigem() {
-    //        return origem;
-    //    }
-    //
-    //    public void setOrigem(String origem) {
-    //        this.origem = origem;
-    //    }
-    //
-    //    public String getDestino() {
-    //        return destino;
-    //    }
-    //
-    //    public void setDestino(String destino) {
-    //        this.destino = destino;
-    //    }
-    //
-    //    public String getDiaDaSemana() {
-    //        return diaDaSemana;
-    //    }
-    //
-    //    public void setDiaDaSemana(String diaDaSemana) {
-    //        this.diaDaSemana = diaDaSemana;
-    //    }
-    //
-    //    public String getVeiculo() {
-    //        return veiculo;
-    //    }
-    //
-    //    public void setVeiculo(String veiculo) {
-    //        this.veiculo = veiculo;
-    //    }
-    //
-    //    public String getPreco() {
-    //        return preco;
-    //    }
-    //
-    //    public void setPreco(String preco) {
-    //        this.preco = preco;
-    //    }
-    //
-    //    public String getHorario() {
-    //        return horario;
-    //    }
-    //
-    //    public void setHorario(String horario) {
-    //        this.horario = horario;
-    //    }
-//}
