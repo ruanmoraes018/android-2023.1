@@ -60,6 +60,7 @@ public class Dao extends SQLiteOpenHelper {
 
         String sql_rotas = "CREATE TABLE rotas (criar_rotas_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "origem_rota TEXT, " +
+                "numeroRota INT UNIQUE, " +
                 "destino_rota TEXT, " +
                 "tipo_veiculo TEXT, " +
                 "valor_rota REAL, " +
@@ -243,6 +244,19 @@ public class Dao extends SQLiteOpenHelper {
     public long inserirRota(Rotas rota) {
         SQLiteDatabase db = getWritableDatabase();
         try {
+            String query = "SELECT MAX(numeroRota) FROM rotas";
+            Cursor cursor = db.rawQuery(query, null);
+
+            int numeroRotaMaximo = 0;
+
+            if (cursor.moveToFirst()) {
+                numeroRotaMaximo = cursor.getInt(0);
+            }
+
+            cursor.close();
+
+            int proximoNumeroRota = numeroRotaMaximo + 1;
+
             // Inserir os dias da semana na tabela dias_semanas
             ContentValues diasSemanas = new ContentValues();
             diasSemanas.put("domingo", rota.isDomingo() ? "true" : "false");
@@ -257,6 +271,7 @@ public class Dao extends SQLiteOpenHelper {
 
             // Inserir a rota na tabela rotas
             ContentValues rotas = new ContentValues();
+            rotas.put("numeroRota", proximoNumeroRota); // Usar o próximo número de rota único
             rotas.put("origem_rota", rota.getOrigem());
             rotas.put("destino_rota", rota.getDestino());
             rotas.put("tipo_veiculo", rota.getTipo());
@@ -269,7 +284,7 @@ public class Dao extends SQLiteOpenHelper {
 
             db.close();
 
-            return rotaId + 007;
+            return rotaId;
         } catch (SQLiteException e) {
             Log.e("DAO", e.getMessage());
             return -1; // Retorne um valor de erro adequado
@@ -286,6 +301,7 @@ public class Dao extends SQLiteOpenHelper {
         Cursor c = db.rawQuery(sql_busca_motorista, new String[]{String.valueOf(motoristaId)});
 
         while (c.moveToNext()) {
+            @SuppressLint("Range") int numeroRota = c.getInt(c.getColumnIndex("numeroRota"));
             @SuppressLint("Range") String origemRota = c.getString(c.getColumnIndex("origem_rota"));
             @SuppressLint("Range") String destinoRota = c.getString(c.getColumnIndex("destino_rota"));
             @SuppressLint("Range") String tipoRota = c.getString(c.getColumnIndex("tipo_veiculo"));
@@ -328,7 +344,9 @@ public class Dao extends SQLiteOpenHelper {
 
 // Resto do código permanece inalterado
 
+
             Rotas rota = new Rotas(
+                    numeroRota,
                     origemRota,
                     destinoRota,
                     tipoRota,
@@ -361,6 +379,116 @@ public class Dao extends SQLiteOpenHelper {
         c.close();
         return -1; // Retorna -1 se não encontrar o motorista
     }
+    public int atualizarRota(Integer idDoMotoristaLogado, int idRota, Rotas rota) {
+        if (rota == null) {
+            Log.e("DAO", "Tentativa de atualizar uma rota nula.");
+            return -1; // Retorne um valor de erro apropriado
+        }
+
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+        try {
+            // Atualize os campos da rota
+            String origem = rota.getOrigem();
+            String destino = rota.getDestino();
+            String tipo = rota.getTipo();
+            Float valor = rota.getValor();
+            String horario = rota.getHorario();
+
+            if (origem == null || destino == null || tipo == null || valor == null || horario == null) {
+                Log.e("DAO", "Um ou mais campos da rota são nulos.");
+                return -1; // Retorne um valor de erro apropriado
+            }
+
+            ContentValues values = new ContentValues();
+            values.put("origem_rota", origem);
+            values.put("destino_rota", destino);
+            values.put("tipo_veiculo", tipo);
+            values.put("valor_rota", valor);
+            values.put("horario_rota", horario);
+
+            Log.d("DAO", "Valores antes da atualização:");
+            Log.d("DAO", "Origem: " + origem);
+            Log.d("DAO", "Destino: " + destino);
+            Log.d("DAO", "Tipo de veículo: " + tipo);
+            Log.d("DAO", "Valor: " + valor);
+            Log.d("DAO", "Horário: " + horario);
+
+            // Atualize a tabela "rotas" com base no ID do motorista e no ID da rota
+            int rowsUpdated = db.update("rotas", values, "id_motoristas = ? AND criar_rotas_id = ?", new String[]{String.valueOf(idDoMotoristaLogado), String.valueOf(idRota)});
+
+            Log.d("DAO", "Linhas atualizadas na tabela 'rotas': " + rowsUpdated);
+
+            // Agora, atualize os dias da semana na tabela "dias_semanas" com base no ID da rota
+            ContentValues diasSemanaValues = new ContentValues();
+            diasSemanaValues.put("domingo", rota.isDomingo() ? "true" : "false");
+            diasSemanaValues.put("segunda", rota.isSegunda() ? "true" : "false");
+            diasSemanaValues.put("terca", rota.isTerca() ? "true" : "false");
+            diasSemanaValues.put("quarta", rota.isQuarta() ? "true" : "false");
+            diasSemanaValues.put("quinta", rota.isQuinta() ? "true" : "false");
+            diasSemanaValues.put("sexta", rota.isSexta() ? "true" : "false");
+            diasSemanaValues.put("sabado", rota.isSabado() ? "true" : "false");
+            int diasSemanaRowsUpdated = db.update("dias_semanas", diasSemanaValues, "dias_semana_id = ?", new String[]{String.valueOf(idRota)});
+
+            Log.d("DAO", "Linhas atualizadas na tabela 'dias_semanas': " + diasSemanaRowsUpdated);
+
+            db.setTransactionSuccessful();
+            return rowsUpdated;
+        } catch (SQLiteException e) {
+            Log.e("DAO", e.getMessage());
+            return -1; // Retorne um valor de erro apropriado
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
+    }
+
+
+    public int buscarIdRotaPorNumeroRota(int numeroRota) {
+        SQLiteDatabase db = getReadableDatabase();
+        String sql_busca_id_rota = "SELECT criar_rotas_id FROM rotas WHERE numeroRota = ?";
+        Cursor c = db.rawQuery(sql_busca_id_rota, new String[]{String.valueOf(numeroRota)});
+
+        if (c.moveToFirst()) {
+            int idRota = c.getInt(0);
+            c.close();
+            Log.d("Dao", "ID da rota encontrado: " + idRota); // Adicione esta linha para verificar o ID encontrado
+            return idRota;
+        } else {
+            c.close();
+            Log.d("Dao", "Rota não encontrada para o número de rota: " + numeroRota); // Adicione esta linha para verificar quando a rota não é encontrada
+            return -1; // Retorna -1 para indicar que a rota não foi encontrada
+        }
+    }
+
+
+    public int deletarRota(int idDoMotoristaLogado, int idRota) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.beginTransaction();
+
+        try {
+            // Excluir a rota da tabela "rotas" com base no ID do motorista e no ID da rota
+            int rowsDeleted = db.delete("rotas", "id_motoristas = ? AND criar_rotas_id = ?", new String[]{String.valueOf(idDoMotoristaLogado), String.valueOf(idRota)});
+
+            // Excluir os dias da semana correspondentes na tabela "dias_semanas"
+            int diasSemanaRowsDeleted = db.delete("dias_semanas", "dias_semana_id = ?", new String[]{String.valueOf(idRota)});
+
+            // Verifique se alguma linha foi excluída
+            if (rowsDeleted > 0 && diasSemanaRowsDeleted > 0) {
+                db.setTransactionSuccessful();
+                return rowsDeleted; // Retorne o número de linhas excluídas (pode ser usado para verificação)
+            } else {
+                return -1; // Nenhuma linha foi excluída
+            }
+        } catch (SQLiteException e) {
+            Log.e("DAO", e.getMessage());
+            return -1; // Retorne um valor de erro apropriado
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
+    }
+
 
 
 

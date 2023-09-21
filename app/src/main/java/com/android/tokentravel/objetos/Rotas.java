@@ -1,35 +1,45 @@
 package com.android.tokentravel.objetos;
 import java.util.List;
 
-public class Rotas {
+public class Rotas extends DiasSemanas {
     Integer rota_id;
+    int numero_rota;
+    static int numeroRotaAtual = 1;
     String origem;
     String destino;
     String tipo;
     float valor;
     String horario;
     Integer id_motorista;
-    boolean domingo, segunda, terca, quarta, quinta, sexta, sabado;
     List<String> diasAtivos; // Adicione um campo para armazenar os nomes dos dias ativos
 
+    // Construtor que recebe os dias da semana como parâmetros individuais
     public Rotas(String origem, String destino, String tipo, float valor, String horario, Integer id_motorista, boolean domingo, boolean segunda, boolean terca, boolean quarta, boolean quinta, boolean sexta, boolean sabado) {
+        super(domingo, segunda, terca, quarta, quinta, sexta, sabado); // Chame o construtor da superclasse
+        this.numero_rota = numeroRotaAtual; // Define o número da rota com o número atual
+        numeroRotaAtual++;
         this.origem = origem;
         this.destino = destino;
         this.tipo = tipo;
         this.valor = valor;
         this.horario = horario;
         this.id_motorista = id_motorista;
-        this.domingo = domingo;
-        this.segunda = segunda;
-        this.terca = terca;
-        this.quarta = quarta;
-        this.quinta = quinta;
-        this.sexta = sexta;
-        this.sabado = sabado;
+
+        // Defina as variáveis booleanas com base nos nomes dos dias ativos
     }
 
-    // Construtor alternativo que aceita a lista de nomes dos dias ativos
-    public Rotas(String origem, String destino, String tipo, float valor, String horario, Integer id_motorista, List<String> diasAtivos) {
+    // Construtor que recebe a lista de nomes dos dias ativos
+    public Rotas(int numero, String origem, String destino, String tipo, float valor, String horario, Integer id_motorista, List<String> diasAtivos) {
+        super( // Chame o construtor da superclasse com base na lista de nomes de dias ativos
+                diasAtivos.contains("domingo"),
+                diasAtivos.contains("segunda"),
+                diasAtivos.contains("terca"),
+                diasAtivos.contains("quarta"),
+                diasAtivos.contains("quinta"),
+                diasAtivos.contains("sexta"),
+                diasAtivos.contains("sabado")
+        );
+        this.numero_rota = numero;
         this.origem = origem;
         this.destino = destino;
         this.tipo = tipo;
@@ -37,14 +47,6 @@ public class Rotas {
         this.horario = horario;
         this.id_motorista = id_motorista;
         this.diasAtivos = diasAtivos; // Inicialize o campo de lista de dias ativos
-        // Defina as variáveis booleanas com base nos nomes dos dias ativos
-        this.domingo = diasAtivos.contains("domingo");
-        this.segunda = diasAtivos.contains("segunda");
-        this.terca = diasAtivos.contains("terca");
-        this.quarta = diasAtivos.contains("quarta");
-        this.quinta = diasAtivos.contains("quinta");
-        this.sexta = diasAtivos.contains("sexta");
-        this.sabado = diasAtivos.contains("sabado");
     }
 
     public Integer getRota_id() {
@@ -54,7 +56,13 @@ public class Rotas {
     public void setRota_id(Integer rota_id) {
         this.rota_id = rota_id;
     }
+    public int getNumero_rota() {
+        return numero_rota;
+    }
 
+    public void setNumero_rota(int numero_rota) {
+        this.numero_rota = numero_rota;
+    }
     public String getOrigem() {
         return origem;
     }
@@ -103,59 +111,14 @@ public class Rotas {
         this.id_motorista = id_motorista;
     }
 
-    public boolean isDomingo() {
-        return domingo;
+    public List<String> getDiasAtivos() {
+        return diasAtivos;
     }
 
-    public void setDomingo(boolean domingo) {
-        this.domingo = domingo;
+    public void setDiasAtivos(List<String> diasAtivos) {
+        this.diasAtivos = diasAtivos;
+
     }
 
-    public boolean isSegunda() {
-        return segunda;
-    }
-
-    public void setSegunda(boolean segunda) {
-        this.segunda = segunda;
-    }
-
-    public boolean isTerca() {
-        return terca;
-    }
-
-    public void setTerca(boolean terca) {
-        this.terca = terca;
-    }
-
-    public boolean isQuarta() {
-        return quarta;
-    }
-
-    public void setQuarta(boolean quarta) {
-        this.quarta = quarta;
-    }
-
-    public boolean isQuinta() {
-        return quinta;
-    }
-
-    public void setQuinta(boolean quinta) {
-        this.quinta = quinta;
-    }
-
-    public boolean isSexta() {
-        return sexta;
-    }
-
-    public void setSexta(boolean sexta) {
-        this.sexta = sexta;
-    }
-
-    public boolean isSabado() {
-        return sabado;
-    }
-
-    public void setSabado(boolean sabado) {
-        this.sabado = sabado;
-    }
 }
+

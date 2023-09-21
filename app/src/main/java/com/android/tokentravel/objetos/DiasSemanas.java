@@ -4,7 +4,7 @@ public class DiasSemanas {
     Integer id_dias_semana;
     boolean domingo, segunda, terca, quarta, quinta, sexta, sabado;
 
-    public DiasSemanas(Integer id_dias_semana, boolean domingo, boolean segunda, boolean terca, boolean quarta, boolean quinta, boolean sexta, boolean sabado) {
+    public DiasSemanas(boolean domingo, boolean segunda, boolean terca, boolean quarta, boolean quinta, boolean sexta, boolean sabado) {
         this.id_dias_semana = id_dias_semana;
         this.domingo = domingo;
         this.segunda = segunda;

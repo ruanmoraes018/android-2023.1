@@ -95,19 +95,19 @@
             app:layout_constraintEnd_toEndOf="@id/containerComponents">
 
             <CheckBox
-                android:id="@+id/checkbox_sunday"
+                android:id="@+id/checkDomingo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Domingo" />
 
             <CheckBox
-                android:id="@+id/checkbox_monday"
+                android:id="@+id/checkSegunda"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Segunda" />
 
             <CheckBox
-                android:id="@+id/checkbox_tuesday"
+                android:id="@+id/checkTerca"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Terça" />
@@ -125,19 +125,19 @@
             app:layout_constraintEnd_toEndOf="@id/containerComponents">
 
             <CheckBox
-                android:id="@+id/checkbox_wednesday"
+                android:id="@+id/checkQuarta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Quarta" />
 
             <CheckBox
-                android:id="@+id/checkbox_thursday"
+                android:id="@+id/checkQuinta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Quinta" />
 
             <CheckBox
-                android:id="@+id/checkbox_friday"
+                android:id="@+id/checkSexta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sexta" />
@@ -155,7 +155,7 @@
             app:layout_constraintEnd_toEndOf="@id/containerComponents">
 
             <CheckBox
-                android:id="@+id/checkbox_saturday"
+                android:id="@+id/checkSabado"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sábado" />
