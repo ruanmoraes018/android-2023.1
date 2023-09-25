@@ -5,10 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.LocationRequest;
 import com.mapbox.api.directions.v5.DirectionsCriteria;
 import com.mapbox.api.directions.v5.MapboxDirections;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
@@ -54,6 +57,7 @@ public class RotaPontoaPonto extends AppCompatActivity {
     private double longitudeDestino;
 
     private Button btListadeMoto;
+    private ImageView ajustarCameraImageView; // Adicione o ImageView
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +140,14 @@ public class RotaPontoaPonto extends AppCompatActivity {
             }
         });
 
+        // Encontre o ImageView no layout e atribua um clique a ele
+        ajustarCameraImageView = findViewById(R.id.ajustarCameraImageView);
+        ajustarCameraImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ajustarCameraParaRota();
+            }
+        });
 
         btListadeMoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -238,7 +250,29 @@ public class RotaPontoaPonto extends AppCompatActivity {
         mapView.onLowMemory();
     }
 
-    private void btListadeMotoristas(){
+    private void btListadeMotoristas() {
         btListadeMoto = findViewById(R.id.verificarMotoristasButton);
+    }
+
+    public void ajustarCameraParaRota() {
+        LatLngBounds routeBounds = new LatLngBounds.Builder()
+                .include(new LatLng(latitudeOrigem, longitudeOrigem))
+                .include(new LatLng(latitudeDestino, longitudeDestino))
+                .build();
+        ajustarCameraImageView.setVisibility(View.GONE);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ajustarCameraImageView.setVisibility(View.VISIBLE);
+            }
+        }, 2000);
+        mapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(@NonNull MapboxMap mapboxMap) {
+                mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(routeBounds, 200), 2000);
+            }
+        });
+
     }
 }

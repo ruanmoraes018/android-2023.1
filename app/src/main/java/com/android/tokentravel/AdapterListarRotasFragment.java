@@ -30,10 +30,12 @@ import java.util.List;
 
 public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterListarRotasFragment.MyViewHolder> {
     private List<Rotas> mylist;
+    private VerRotasFragment fragment;
 
 
-    public AdapterListarRotasFragment() {
+    public AdapterListarRotasFragment(VerRotasFragment fragment) {
         this.mylist = new ArrayList<>();
+        this.fragment = fragment;
     }
 
     public void setRotasList(List<Rotas> rotasList) {
@@ -271,13 +273,22 @@ public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterList
                     public void onClick(DialogInterface dialog, int id) {
                         // Lógica para excluir a rota aqui
                         // Por exemplo:
-                        Dao dao = new Dao(context);
-                        int linhasAfetadas = dao.deletarRota(idDoMotoristaLogado, idRota);                        // Atualize o RecyclerView após a exclusão
-                        if (linhasAfetadas > 0) {
-                            // Atualização bem-sucedida
-                            notifyDataSetChanged();
+                        if (true) {
 
+                            Dao dao = new Dao(context);
+                            int linhasAfetadas = dao.deletarRota(idDoMotoristaLogado, idRota);                        // Atualize o RecyclerView após a exclusão
+                            if (linhasAfetadas > 0) {
+                                // Atualização bem-sucedida
+                                fragment.recarregarFragmento();
+
+                            } else {
+                                // Algo deu errado na atualização
+                            }
+
+                            fragment.recarregarFragmento();
                         } else {
+                            Toast.makeText(context, "ERRO!", Toast.LENGTH_SHORT).show();
+
                         }
                         dialog.dismiss(); // Feche o diálogo após excluir
                     }

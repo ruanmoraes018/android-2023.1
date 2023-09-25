@@ -40,7 +40,7 @@ public class VerRotasFragment extends Fragment {
             // Chame a função para buscar as rotas do motorista passando o ID do motorista logado
             List<Rotas> rotas = buscaRotasDoMotorista(idMotoristaLogado);
 
-            adapter = new AdapterListarRotasFragment();
+            adapter = new AdapterListarRotasFragment(this); // 'this' é uma referência ao fragmento
             recyclerViewRotas.setAdapter(adapter);
 
             // Configure o Adapter com os dados recuperados
@@ -64,4 +64,24 @@ public class VerRotasFragment extends Fragment {
 
         return rotas;
     }
+    public void recarregarFragmento() {
+        // Obtenha o ID do motorista logado das preferências compartilhadas
+        int idMotoristaLogado = sharedPreferences.getInt("idDoMotoristaLogado", -1);
+
+        // Verifique se o ID do motorista é válido (-1 indica que não foi encontrado)
+        if (idMotoristaLogado != -1) {
+            // Chame a função para buscar as rotas do motorista passando o ID do motorista logado
+            List<Rotas> rotas = buscaRotasDoMotorista(idMotoristaLogado);
+
+            // Atualize o Adapter com os novos dados
+            if (adapter != null) {
+                adapter.setRotasList(rotas);
+                adapter.notifyDataSetChanged();
+            }
+        } else {
+            // Trate o caso em que o ID do motorista não foi encontrado
+            Toast.makeText(getContext(), "ID do Motorista não encontrado", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

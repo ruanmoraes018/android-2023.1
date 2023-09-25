@@ -15,6 +15,16 @@
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintBottom_toTopOf="@+id/footerLayout"/>
 
+  <ImageView
+      android:id="@+id/ajustarCameraImageView"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|end"
+      android:layout_margin="16dp"
+      android:src="@drawable/ic_update_location"
+      mapbox:layout_constraintBottom_toBottomOf="@+id/mapView"
+      mapbox:layout_constraintEnd_toEndOf="parent" />
+
   <LinearLayout
       android:id="@+id/footerLayout"
       android:layout_width="match_parent"
