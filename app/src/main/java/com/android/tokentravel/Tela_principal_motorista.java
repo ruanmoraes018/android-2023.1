@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -34,9 +35,19 @@ public class Tela_principal_motorista extends AppCompatActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(Tela_principal_motorista.this);
         String nomeDoMotorista = sharedPreferences.getString("nomeDoMotoristaLogado", "");
 
+        // Dividir o nome completo em palavras
+        String[] nomePartes = nomeDoMotorista.split(" ");
+        // Pega a primeira palavra
+        String primeiroNome = nomePartes[0];
+
         TextView nomeDoMotoristaTextView = findViewById(R.id.saudacao);
 
-        nomeDoMotoristaTextView.setText("Olá, " + nomeDoMotorista);
+        // Verifique se o nome não está vazio antes de exibi-lo
+        if (!TextUtils.isEmpty(primeiroNome)) {
+            nomeDoMotoristaTextView.setText("Olá, " + primeiroNome);
+        } else {
+            nomeDoMotoristaTextView.setText("Olá, Motorista"); // Caso o nome não esteja disponível
+        }
 
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override

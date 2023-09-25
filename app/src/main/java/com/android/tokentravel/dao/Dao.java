@@ -42,9 +42,9 @@ public class Dao extends SQLiteOpenHelper {
 
         String sql_motoristas = "CREATE TABLE motoristas (motoristas_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "id_pessoas INTEGER, " +
-                "motoristas_cnh TEXT , " +
-                "modelo_carro TEXT, " +
-                "placa_veiculo TEXT, " +
+                "motoristas_cnh TEXT NOT NULL, " +
+                "modelo_carro TEXT NOT NULL, " +
+                "placa_veiculo TEXT NOT NULL, " +
                 "FOREIGN KEY (id_pessoas) REFERENCES pessoas(pessoas_id));";
         db.execSQL(sql_motoristas);
 
