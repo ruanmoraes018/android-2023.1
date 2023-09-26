@@ -53,22 +53,24 @@
             app:layout_constraintEnd_toEndOf="parent"
             />
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/edit_origem"
             style="@style/Edit_Text"
             android:padding="10dp"
-            android:hint="Origem"
+            android:hint="Ex: Capanema Pará, Brasil"
+            android:maxLength="40"
             android:inputType="text"
             app:layout_constraintTop_toTopOf="@id/containerComponents"
             app:layout_constraintStart_toStartOf="@id/containerComponents"
             app:layout_constraintEnd_toEndOf="@id/containerComponents"
             />
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/edit_destino"
             style="@style/Edit_Text"
             android:padding="10dp"
-            android:hint="Destino"
+            android:hint="Ex: Capitão Poço Pará, Brasil"
+            android:maxLength="40"
             android:inputType="text"
             app:layout_constraintTop_toBottomOf="@id/edit_origem"
             app:layout_constraintStart_toStartOf="@id/containerComponents"

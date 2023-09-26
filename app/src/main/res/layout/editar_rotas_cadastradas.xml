@@ -14,24 +14,26 @@
         android:orientation="vertical"
         >
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/editOrigem"
             style="@style/Edit_Text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:hint="Origem"
+            android:hint="Ex: Capanema Pará, Brasil"
+            android:maxLength="40"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:inputType="text" />
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/editDestino"
             style="@style/Edit_Text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:hint="Destino"
+            android:hint="Ex: Capitão Poço Pará, Brasil"
+            android:maxLength="40"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:inputType="text" />

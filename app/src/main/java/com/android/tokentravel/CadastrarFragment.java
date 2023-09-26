@@ -5,12 +5,17 @@ import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -27,20 +32,49 @@ import com.android.tokentravel.dao.Dao;
 import com.android.tokentravel.objetos.Pessoa;
 import com.android.tokentravel.objetos.Rotas;
 import com.google.android.gms.common.annotation.NonNullApi;
+import com.mapbox.api.geocoding.v5.GeocodingCriteria;
+import com.mapbox.api.geocoding.v5.MapboxGeocoding;
+import com.mapbox.api.geocoding.v5.models.CarmenContext;
+import com.mapbox.api.geocoding.v5.models.CarmenFeature;
+import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CadastrarFragment extends Fragment {
-    EditText editTextOrigem, editTextDestino, editTextValor, editTextHorarioIda;
+    EditText editTextValor, editTextHorarioIda;
     Spinner tipoVeiculo;
     CheckBox checkBoxDomingo, checkBoxSegunda, checkBoxTerca, checkBoxQuarta, checkBoxQuinta, checkBoxSexta, checkBoxSabado;
     private Button btncadastrarROTAFinal;
     private Spinner spinnerOutro;
 //    private MultiAutoCompleteTextView multiAutoCompleteTextView;
 
+    private AutoCompleteTextView editTextOrigem;
+    private AutoCompleteTextView editTextDestino;
+    private ArrayAdapter<String> autoCompleteAdapterOrigem;
+    private ArrayAdapter<String> autoCompleteAdapterDestino;
+    private Set<String> sugestoesUnicas = new HashSet<>();
+    private static final long AUTOCOMPLETE_DELAY = 100;
+    private Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable autocompleteRunnable;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cadastrar, container, false);
 
+        editTextOrigem = view.findViewById(R.id.edit_origem);
+        editTextDestino = view.findViewById(R.id.edit_destino);
 
+        autoCompleteAdapterOrigem = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_dropdown_item_1line);
+        autoCompleteAdapterDestino = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_dropdown_item_1line);
+        editTextOrigem.setAdapter(autoCompleteAdapterOrigem);
+        editTextDestino.setAdapter(autoCompleteAdapterDestino);
 
         spinnerOutro = view.findViewById(R.id.edit_tipo_veiculo);
 //        multiAutoCompleteTextView = view.findViewById(R.id.multiAutoCompleteTextView);
@@ -150,6 +184,116 @@ public class CadastrarFragment extends Fragment {
         });
 
 
+        // Configurar o TextWatcher para as caixas de texto de origem e destino
+        editTextOrigem.addTextChangedListener(new TextWatcher() {
+            private CharSequence beforeText;
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                beforeText = charSequence;
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String newText = editable.toString();
+                handler.removeCallbacks(autocompleteRunnable);
+                handler.postDelayed(() -> consultarSugestoes(editTextOrigem, autoCompleteAdapterOrigem), AUTOCOMPLETE_DELAY);
+            }
+
+        });
+
+        editTextDestino.addTextChangedListener(new TextWatcher() {
+            private CharSequence beforeText;
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                beforeText = charSequence;
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // Não é necessário implementar isso
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String newText = editable.toString();
+                handler.removeCallbacks(autocompleteRunnable);
+                handler.postDelayed(() -> consultarSugestoes(editTextDestino, autoCompleteAdapterDestino), AUTOCOMPLETE_DELAY);
+            }
+        });
+
+
         return view;
+    }
+
+
+
+
+
+
+
+    private void consultarSugestoes(AutoCompleteTextView autoCompleteTextView, ArrayAdapter<String> adapter) {
+        String textoDigitado = autoCompleteTextView.getText().toString().trim();
+
+        if (!textoDigitado.isEmpty()) {
+            MapboxGeocoding geocodingService = MapboxGeocoding.builder()
+                    .accessToken(getResources().getString(R.string.mapbox_access_token))
+                    .query(textoDigitado)
+                    .geocodingTypes(GeocodingCriteria.TYPE_POI)
+                    .languages("pt-BR")
+                    .country("BR")
+                    .build();
+
+            geocodingService.enqueueCall(new Callback<GeocodingResponse>() {
+                @Override
+                public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<CarmenFeature> features = response.body().features();
+                        if (features.size() >= 2) {
+                            sugestoesUnicas.clear();
+
+                            for (CarmenFeature feature : features) {
+                                String cidade = "";
+                                String estado = "";
+                                String pais = "";
+
+                                for (CarmenContext context : feature.context()) {
+                                    String type = context.id();
+                                    String text = context.text();
+
+                                    if (type.startsWith("place")) {
+                                        cidade = text;
+                                    } else if (type.startsWith("region")) {
+                                        estado = text;
+                                    } else if (type.startsWith("country")) {
+                                        pais = text;
+                                    }
+                                }
+
+                                String sugestao = cidade + " " + estado + ", " + pais;
+                                sugestoesUnicas.add(sugestao);
+                            }
+
+                            adapter.clear();
+                            adapter.addAll(new ArrayList<>(sugestoesUnicas));
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<GeocodingResponse> call, Throwable t) {
+                    Toast.makeText(getActivity(), "Algo deu errado, verifique sua conexão!", Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            adapter.clear();
+            adapter.notifyDataSetChanged();
+        }
     }
 }
