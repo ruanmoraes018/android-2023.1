@@ -11,15 +11,12 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,35 +32,55 @@ import com.mapbox.geojson.Point;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
+
 
 public class PesquisaRota extends AppCompatActivity {
 
     private AutoCompleteTextView autoCompleteOrigem;
     private AutoCompleteTextView autoCompleteDestino;
-    private ArrayAdapter<String> autoCompleteAdapterOrigem;
-    private ArrayAdapter<String> autoCompleteAdapterDestino;
-    private Set<String> sugestoesUnicas = new HashSet<>();
-    private static final long AUTOCOMPLETE_DELAY = 100;
-    private Handler handler = new Handler(Looper.getMainLooper());
-    private Runnable autocompleteRunnable;
+    private static final int REQUEST_CODE_ORIGEM = 1;
+    private static final int REQUEST_CODE_DESTINO = 2;
+    private ImageView imagemautocompleteorigem;
+    private ImageView imagemautocompletedestino;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pesquisa_rota);
 
+        imagemautocompleteorigem = findViewById(R.id.autcompleteorigemcampo);
+        imagemautocompletedestino = findViewById(R.id.autcompletedestinocampo);
+
         autoCompleteOrigem = findViewById(R.id.autoCompleteOrigem);
         autoCompleteDestino = findViewById(R.id.autoCompleteDestino);
 
-        autoCompleteAdapterOrigem = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
-        autoCompleteAdapterDestino = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line);
+        // Mapbox access token is configured here.
+        Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
 
-        autoCompleteOrigem.setAdapter(autoCompleteAdapterOrigem);
-        autoCompleteDestino.setAdapter(autoCompleteAdapterDestino);
+        // Inicializar os elementos de UI
+
+
+        // Configurar o clique do botão
+        imagemautocompleteorigem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Chame o método para selecionar a origem
+                openPlaceAutocompleteOrigem(REQUEST_CODE_ORIGEM);
+            }
+        });
+
+        imagemautocompletedestino.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Chame o método para selecionar a origem
+                openPlaceAutocompleteDestino(REQUEST_CODE_ORIGEM);
+            }
+        });
+
 
         Spinner spinnerUserType = findViewById(R.id.spinner_user_type);
 
@@ -118,7 +135,7 @@ public class PesquisaRota extends AppCompatActivity {
                         String stateName = getStateNameFromFeature(feature);
                         String countryName = getCountryNameFromFeature(feature);
 
-                        String locationInfo = cityName + " " + stateName + ", " + countryName;
+                        String locationInfo = cityName + ", " + stateName + ", " + countryName;
                         autoCompleteOrigem.setText(locationInfo);
                     }
                 }
@@ -128,113 +145,51 @@ public class PesquisaRota extends AppCompatActivity {
                     Toast.makeText(PesquisaRota.this, "Erro ao obter descrição de origem, forneça manualmente!", Toast.LENGTH_LONG).show();
                 }
             });
-        }
-
-        else{
+        } else {
             Toast.makeText(PesquisaRota.this, "Não foi possível obter automaticamente a origem, forneça manualmente!", Toast.LENGTH_LONG).show();
         }
 
-        // Configurar o TextWatcher para as caixas de texto de origem e destino
-        autoCompleteOrigem.addTextChangedListener(new TextWatcher() {
-            private CharSequence beforeText;
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                beforeText = charSequence;
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String newText = editable.toString();
-                handler.removeCallbacks(autocompleteRunnable);
-                handler.postDelayed(() -> consultarSugestoes(autoCompleteOrigem, autoCompleteAdapterOrigem), AUTOCOMPLETE_DELAY);
-            }
-
-        });
-
-        autoCompleteDestino.addTextChangedListener(new TextWatcher() {
-            private CharSequence beforeText;
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                beforeText = charSequence;
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // Não é necessário implementar isso
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String newText = editable.toString();
-                handler.removeCallbacks(autocompleteRunnable);
-                handler.postDelayed(() -> consultarSugestoes(autoCompleteDestino, autoCompleteAdapterDestino), AUTOCOMPLETE_DELAY);
-            }
-        });
     }
 
-    private void consultarSugestoes(AutoCompleteTextView autoCompleteTextView, ArrayAdapter<String> adapter) {
-        String textoDigitado = autoCompleteTextView.getText().toString().trim();
+    public void openPlaceAutocompleteOrigem(int requestCodeOrigem) {
+        openPlaceAutocomplete(REQUEST_CODE_ORIGEM, "Forneça a origem");
+    }
 
-        if (!textoDigitado.isEmpty()) {
-            MapboxGeocoding geocodingService = MapboxGeocoding.builder()
-                    .accessToken(getResources().getString(R.string.mapbox_access_token))
-                    .query(textoDigitado)
-                    .geocodingTypes(GeocodingCriteria.TYPE_POI)
-                    .languages("pt-BR")
-                    .country("BR")
-                    .build();
+    public void openPlaceAutocompleteDestino(int requestCodeOrigem) {
+        openPlaceAutocomplete(REQUEST_CODE_DESTINO, "Forneça o destino");
+    }
 
-            geocodingService.enqueueCall(new Callback<GeocodingResponse>() {
-                @Override
-                public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        List<CarmenFeature> features = response.body().features();
-                        if (features.size() >= 2) {
-                            sugestoesUnicas.clear();
+    private void openPlaceAutocomplete(int requestCode, String title) {
+        Intent intent = new PlaceAutocomplete.IntentBuilder()
+                .accessToken(Mapbox.getAccessToken() != null ? Mapbox.getAccessToken() : getString(R.string.mapbox_access_token))
+                .placeOptions(PlaceOptions.builder()
+                        .backgroundColor(Color.parseColor("#23238E"))
+                        .hint(title) // Define o texto aqui
+                        .limit(10)
+                        .country("BR")
+                        .language("pt-BR")
+                        .build(PlaceOptions.MODE_CARDS))
+                .build(PesquisaRota.this);
 
-                            for (CarmenFeature feature : features) {
-                                String cidade = "";
-                                String estado = "";
-                                String pais = "";
+        startActivityForResult(intent, requestCode);
+    }
 
-                                for (CarmenContext context : feature.context()) {
-                                    String type = context.id();
-                                    String text = context.text();
 
-                                    if (type.startsWith("place")) {
-                                        cidade = text;
-                                    } else if (type.startsWith("region")) {
-                                        estado = text;
-                                    } else if (type.startsWith("country")) {
-                                        pais = text;
-                                    }
-                                }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
+            String placeName = selectedCarmenFeature.placeName();
+            String coordinates = selectedCarmenFeature.center().toString();
 
-                                String sugestao = cidade + " " + estado + ", " + pais;
-                                sugestoesUnicas.add(sugestao);
-                            }
-
-                            adapter.clear();
-                            adapter.addAll(new ArrayList<>(sugestoesUnicas));
-                            adapter.notifyDataSetChanged();
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<GeocodingResponse> call, Throwable t) {
-                    Toast.makeText(PesquisaRota.this, "Algo deu errado, verifique sua conexão!", Toast.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            adapter.clear();
-            adapter.notifyDataSetChanged();
+            // Verificar qual solicitação foi retornada
+            if (requestCode == REQUEST_CODE_ORIGEM) {
+                autoCompleteOrigem.setText(placeName);
+                // Após definir a origem, chame o método para selecionar o destino
+            } else if (requestCode == REQUEST_CODE_DESTINO) {
+                autoCompleteDestino.setText(placeName);
+            }
         }
     }
 

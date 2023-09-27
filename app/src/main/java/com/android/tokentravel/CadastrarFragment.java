@@ -1,15 +1,9 @@
 package com.android.tokentravel;
 
-import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
-
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,33 +13,25 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.android.tokentravel.dao.Dao;
-import com.android.tokentravel.objetos.Pessoa;
 import com.android.tokentravel.objetos.Rotas;
-import com.google.android.gms.common.annotation.NonNullApi;
-import com.mapbox.api.geocoding.v5.GeocodingCriteria;
-import com.mapbox.api.geocoding.v5.MapboxGeocoding;
-import com.mapbox.api.geocoding.v5.models.CarmenContext;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
-import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import android.app.Activity;
+import android.content.Intent;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
+
 
 public class CadastrarFragment extends Fragment {
     EditText editTextValor, editTextHorarioIda;
@@ -57,28 +43,48 @@ public class CadastrarFragment extends Fragment {
 
     private AutoCompleteTextView editTextOrigem;
     private AutoCompleteTextView editTextDestino;
-    private ArrayAdapter<String> autoCompleteAdapterOrigem;
-    private ArrayAdapter<String> autoCompleteAdapterDestino;
-    private Set<String> sugestoesUnicas = new HashSet<>();
-    private static final long AUTOCOMPLETE_DELAY = 100;
-    private Handler handler = new Handler(Looper.getMainLooper());
-    private Runnable autocompleteRunnable;
+
+    private static final int REQUEST_CODE_ORIGEM = 1;
+    private static final int REQUEST_CODE_DESTINO = 2;
+    private ImageView autocompleteorigemcadastrar;
+    private ImageView autocompletedestinocadastrar;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cadastrar, container, false);
 
-        editTextOrigem = view.findViewById(R.id.edit_origem);
-        editTextDestino = view.findViewById(R.id.edit_destino);
-
-        autoCompleteAdapterOrigem = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_dropdown_item_1line);
-        autoCompleteAdapterDestino = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_dropdown_item_1line);
-        editTextOrigem.setAdapter(autoCompleteAdapterOrigem);
-        editTextDestino.setAdapter(autoCompleteAdapterDestino);
-
         spinnerOutro = view.findViewById(R.id.edit_tipo_veiculo);
 //        multiAutoCompleteTextView = view.findViewById(R.id.multiAutoCompleteTextView);
         btncadastrarROTAFinal = view.findViewById(R.id.bt_cadastrar_rota);
+
+
+        // Mapbox access token is configured here.
+        Mapbox.getInstance(requireContext(), getString(R.string.mapbox_access_token));
+
+        // Inicializar os elementos de UI
+        autocompleteorigemcadastrar = view.findViewById(R.id.autcompleteorigemcampocadastrar);
+        autocompletedestinocadastrar = view.findViewById(R.id.autcompletedestinocampocadastrar);
+        editTextOrigem = view.findViewById(R.id.edit_origem);
+        editTextDestino = view.findViewById(R.id.edit_destino);
+
+        // Configurar o clique do botão
+        autocompleteorigemcadastrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Chame o método para selecionar a origem
+                openPlaceAutocompleteOrigem(REQUEST_CODE_ORIGEM);
+            }
+        });
+
+        autocompletedestinocadastrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Chame o método para selecionar a origem
+                openPlaceAutocompleteDestino(REQUEST_CODE_ORIGEM);
+            }
+        });
+
 
         String[] opcoesOutroSpinner = {"Táxi", "Van"};
         ArrayAdapter<String> adapterOutroSpinner = new ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_dropdown_item, opcoesOutroSpinner) {
@@ -184,116 +190,48 @@ public class CadastrarFragment extends Fragment {
         });
 
 
-        // Configurar o TextWatcher para as caixas de texto de origem e destino
-        editTextOrigem.addTextChangedListener(new TextWatcher() {
-            private CharSequence beforeText;
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                beforeText = charSequence;
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String newText = editable.toString();
-                handler.removeCallbacks(autocompleteRunnable);
-                handler.postDelayed(() -> consultarSugestoes(editTextOrigem, autoCompleteAdapterOrigem), AUTOCOMPLETE_DELAY);
-            }
-
-        });
-
-        editTextDestino.addTextChangedListener(new TextWatcher() {
-            private CharSequence beforeText;
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                beforeText = charSequence;
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // Não é necessário implementar isso
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String newText = editable.toString();
-                handler.removeCallbacks(autocompleteRunnable);
-                handler.postDelayed(() -> consultarSugestoes(editTextDestino, autoCompleteAdapterDestino), AUTOCOMPLETE_DELAY);
-            }
-        });
-
-
         return view;
     }
 
 
+    public void openPlaceAutocompleteOrigem(int requestCodeOrigem) {
+        openPlaceAutocomplete(REQUEST_CODE_ORIGEM, "Forneça a origem");
+    }
 
+    public void openPlaceAutocompleteDestino(int requestCodeOrigem) {
+        openPlaceAutocomplete(REQUEST_CODE_DESTINO, "Forneça o destino");
+    }
 
+    private void openPlaceAutocomplete(int requestCode, String title) {
+        Intent intent = new PlaceAutocomplete.IntentBuilder()
+                .accessToken(Mapbox.getAccessToken() != null ? Mapbox.getAccessToken() : getString(R.string.mapbox_access_token))
+                .placeOptions(PlaceOptions.builder()
+                        .backgroundColor(Color.parseColor("#23238E"))
+                        .hint(title) // Define o texto aqui
+                        .limit(10)
+                        .country("BR")
+                        .language("pt-BR")
+                        .build(PlaceOptions.MODE_CARDS))
+                .build(requireActivity()); // Use requireActivity() para obter o contexto do fragmento
 
+        startActivityForResult(intent, requestCode);
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
+            String placeName = selectedCarmenFeature.placeName();
+            String coordinates = selectedCarmenFeature.center().toString();
 
-    private void consultarSugestoes(AutoCompleteTextView autoCompleteTextView, ArrayAdapter<String> adapter) {
-        String textoDigitado = autoCompleteTextView.getText().toString().trim();
-
-        if (!textoDigitado.isEmpty()) {
-            MapboxGeocoding geocodingService = MapboxGeocoding.builder()
-                    .accessToken(getResources().getString(R.string.mapbox_access_token))
-                    .query(textoDigitado)
-                    .geocodingTypes(GeocodingCriteria.TYPE_POI)
-                    .languages("pt-BR")
-                    .country("BR")
-                    .build();
-
-            geocodingService.enqueueCall(new Callback<GeocodingResponse>() {
-                @Override
-                public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        List<CarmenFeature> features = response.body().features();
-                        if (features.size() >= 2) {
-                            sugestoesUnicas.clear();
-
-                            for (CarmenFeature feature : features) {
-                                String cidade = "";
-                                String estado = "";
-                                String pais = "";
-
-                                for (CarmenContext context : feature.context()) {
-                                    String type = context.id();
-                                    String text = context.text();
-
-                                    if (type.startsWith("place")) {
-                                        cidade = text;
-                                    } else if (type.startsWith("region")) {
-                                        estado = text;
-                                    } else if (type.startsWith("country")) {
-                                        pais = text;
-                                    }
-                                }
-
-                                String sugestao = cidade + " " + estado + ", " + pais;
-                                sugestoesUnicas.add(sugestao);
-                            }
-
-                            adapter.clear();
-                            adapter.addAll(new ArrayList<>(sugestoesUnicas));
-                            adapter.notifyDataSetChanged();
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<GeocodingResponse> call, Throwable t) {
-                    Toast.makeText(getActivity(), "Algo deu errado, verifique sua conexão!", Toast.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            adapter.clear();
-            adapter.notifyDataSetChanged();
+            // Verificar qual solicitação foi retornada
+            if (requestCode == REQUEST_CODE_ORIGEM) {
+                editTextOrigem.setText(placeName);
+                // Após definir a origem, chame o método para selecionar o destino
+            } else if (requestCode == REQUEST_CODE_DESTINO) {
+                editTextDestino.setText(placeName);
+            }
         }
     }
 }

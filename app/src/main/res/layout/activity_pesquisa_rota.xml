@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.core.widget.NestedScrollView
+<androidx.core.widget.NestedScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     >
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/azul_marinho"
@@ -33,6 +32,8 @@
         <View
             android:id="@+id/containerComponents"
             style="@style/ContainerComponents2"
+            android:layout_height="365dp"
+
             app:layout_constraintTop_toBottomOf="@id/title_pesquisa_rota"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -41,26 +42,56 @@
         <AutoCompleteTextView
             android:id="@+id/autoCompleteOrigem"
             style="@style/Edit_Text"
-            android:hint="Origem"
-            android:maxLength="40"
+            android:hint="Ex: Cametá, Pará, Brasil"
             android:drawableRight="@drawable/ic_local_initial"
+            android:maxLength="50"
             android:inputType="text"
             app:layout_constraintTop_toTopOf="@id/containerComponents"
             app:layout_constraintStart_toStartOf="@id/containerComponents"
             app:layout_constraintEnd_toEndOf="@id/containerComponents"
             />
 
+        <ImageView
+            android:id="@+id/autcompleteorigemcampo"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="20dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="@+id/autoCompleteOrigem"
+            app:layout_constraintEnd_toEndOf="@+id/autoCompleteOrigem"
+            app:layout_constraintTop_toTopOf="@+id/autoCompleteOrigem"
+            tools:ignore="HardcodedText,TouchTargetSizeCheck" />
+<!--        android:src="@drawable/ic_local_initial"-->
+
+
         <AutoCompleteTextView
             android:id="@+id/autoCompleteDestino"
             style="@style/Edit_Text"
-            android:hint="Destino"
-            android:maxLength="40"
+            android:hint="Ex: Bragança, Pará, Brasil"
+            android:maxLength="50"
             android:drawableRight="@drawable/ic_local_destiny"
             android:inputType="text"
             app:layout_constraintTop_toBottomOf="@id/autoCompleteOrigem"
             app:layout_constraintStart_toStartOf="@id/containerComponents"
             app:layout_constraintEnd_toEndOf="@id/containerComponents"
             />
+
+        <ImageView
+            android:id="@+id/autcompletedestinocampo"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end"
+            android:clickable="true"
+            android:layout_marginEnd="20dp"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="@+id/autoCompleteDestino"
+            app:layout_constraintEnd_toEndOf="@+id/autoCompleteDestino"
+            app:layout_constraintTop_toTopOf="@+id/autoCompleteDestino"
+            tools:ignore="HardcodedText,TouchTargetSizeCheck" />
+<!--        android:src="@drawable/ic_local_destiny"-->
+
 
         <Spinner
             android:id="@+id/spinner_user_type"
