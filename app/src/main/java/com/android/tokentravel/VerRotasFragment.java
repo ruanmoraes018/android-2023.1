@@ -1,5 +1,10 @@
 package com.android.tokentravel;
 
+import static com.android.tokentravel.AdapterListarRotasFragment.REQUEST_CODE_DESTINO;
+import static com.android.tokentravel.AdapterListarRotasFragment.REQUEST_CODE_ORIGEM;
+
+import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -13,6 +18,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.android.tokentravel.dao.Dao;
 import com.android.tokentravel.objetos.Rotas;
+import com.mapbox.api.geocoding.v5.models.CarmenFeature;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,5 +91,28 @@ public class VerRotasFragment extends Fragment {
             Toast.makeText(getContext(), "ID do Motorista não encontrado", Toast.LENGTH_SHORT).show();
         }
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            CarmenFeature selectedCarmenFeature = PlaceAutocomplete.getPlace(data);
+            String placeName = selectedCarmenFeature.placeName();
+            String coordinates = selectedCarmenFeature.center().toString();
+
+            // Verificar qual solicitação foi retornada
+            if (requestCode == REQUEST_CODE_ORIGEM) {
+                if (adapter != null) {
+                    adapter.setEditOrigemText(placeName);
+                }
+                // Após definir a origem, chame o método para selecionar o destino
+            } else if (requestCode == REQUEST_CODE_DESTINO) {
+                if (adapter != null) {
+                    adapter.setEditDestinoText(placeName);
+                }
+            }
+        }
+    }
+
 
 }

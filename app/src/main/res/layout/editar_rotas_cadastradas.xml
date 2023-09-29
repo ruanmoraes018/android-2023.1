@@ -21,10 +21,23 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:hint="Ex: Capanema Pará, Brasil"
-            android:maxLength="40"
+            android:drawableRight="@drawable/ic_local_initial"
+            android:maxLength="50"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:inputType="text" />
+
+        <ImageView
+            android:id="@+id/autcompleteorigemcampoeditar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end"
+            android:layout_marginTop="-45dp"
+            android:layout_marginEnd="35dp"
+            android:layout_marginBottom="20sp"
+            android:clickable="true"
+            android:focusable="true"
+            tools:ignore="HardcodedText,TouchTargetSizeCheck" />
 
         <AutoCompleteTextView
             android:id="@+id/editDestino"
@@ -33,10 +46,23 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:hint="Ex: Capitão Poço Pará, Brasil"
-            android:maxLength="40"
+            android:drawableRight="@drawable/ic_local_destiny"
+            android:maxLength="50"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:inputType="text" />
+
+        <ImageView
+            android:id="@+id/autcompletedestinocampoeditar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end"
+            android:layout_marginTop="-45dp"
+            android:layout_marginBottom="20sp"
+            android:layout_marginEnd="35dp"
+            android:clickable="true"
+            android:focusable="true"
+            tools:ignore="HardcodedText,TouchTargetSizeCheck" />
 
         <Spinner
             android:id="@+id/editVeiculo"

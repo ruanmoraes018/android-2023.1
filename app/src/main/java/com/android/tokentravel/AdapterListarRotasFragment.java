@@ -1,9 +1,11 @@
 package com.android.tokentravel;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Handler;
@@ -34,6 +36,9 @@ import com.mapbox.api.geocoding.v5.MapboxGeocoding;
 import com.mapbox.api.geocoding.v5.models.CarmenContext;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
+import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -47,26 +52,36 @@ import retrofit2.Response;
 public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterListarRotasFragment.MyViewHolder> {
     private List<Rotas> mylist;
     private VerRotasFragment fragment;
-
-////    private AutoCompleteTextView editTextOrigem;
-////    private AutoCompleteTextView editTextDestino;
-//    private ArrayAdapter<String> autoCompleteAdapterOrigem;
-//    private ArrayAdapter<String> autoCompleteAdapterDestino;
-//    private Set<String> sugestoesUnicas = new HashSet<>();
-//    private static final long AUTOCOMPLETE_DELAY = 100;
-//    private Handler handler = new Handler(Looper.getMainLooper());
-//    private Runnable autocompleteRunnable;
-
+    private Activity activity;
+    public AutoCompleteTextView editOrigem;
+    public AutoCompleteTextView editDestino;
+    public static final int REQUEST_CODE_ORIGEM = 1;
+    public static final int REQUEST_CODE_DESTINO = 2;
 
     public AdapterListarRotasFragment(VerRotasFragment fragment) {
         this.mylist = new ArrayList<>();
         this.fragment = fragment;
+        this.activity = activity;
     }
 
     public void setRotasList(List<Rotas> rotasList) {
         this.mylist = rotasList;
         notifyDataSetChanged(); // Notifique o adaptador sobre a alteração nos dados
     }
+
+    public void setEditOrigemText(String text) {
+        if (true) {
+            editOrigem.setText(text);
+        }
+    }
+
+    public void setEditDestinoText(String text) {
+        if (editDestino != null) {
+            editDestino.setText(text);
+        }
+    }
+
+
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -185,6 +200,26 @@ public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterList
 
         Spinner spinnerOutro = dialogView.findViewById(R.id.editVeiculo);
 
+
+        ImageView autocompleteorigemeditar  = dialogView.findViewById(R.id.autcompleteorigemcampoeditar);
+        ImageView autocompletedestinoeditar  = dialogView.findViewById(R.id.autcompletedestinocampoeditar);
+        autocompleteorigemeditar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Chame o método para selecionar a origem
+                openPlaceAutocompleteOrigem(REQUEST_CODE_ORIGEM);
+            }
+        });
+
+        autocompletedestinoeditar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Chame o método para selecionar o destino
+                openPlaceAutocompleteDestino(REQUEST_CODE_ORIGEM);
+            }
+        });
+
+
         String[] opcoesOutroSpinner = {"Taxí", "Van"};
         ArrayAdapter<String> adapterOutroSpinner = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, opcoesOutroSpinner) {
             @Override
@@ -204,14 +239,14 @@ public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterList
             }
         };
 
+        // Por aqui usa o autiocomplete
+        editOrigem = dialogView.findViewById(R.id.editOrigem);
+        editDestino = dialogView.findViewById(R.id.editDestino);
 
+        // Por aqui usa o preenchimento manual
         AutoCompleteTextView editOrigem = dialogView.findViewById(R.id.editOrigem);
         AutoCompleteTextView editDestino = dialogView.findViewById(R.id.editDestino);
 
-//        autoCompleteAdapterOrigem = new ArrayAdapter<>(fragment.requireActivity(), android.R.layout.simple_dropdown_item_1line);
-//        autoCompleteAdapterDestino = new ArrayAdapter<>(fragment.requireActivity(), android.R.layout.simple_dropdown_item_1line);
-//        editOrigem.setAdapter(autoCompleteAdapterOrigem);
-//        editDestino.setAdapter(autoCompleteAdapterDestino);
 
         spinnerOutro.setAdapter(adapterOutroSpinner);
 
@@ -296,54 +331,6 @@ public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterList
         builder.create().show();
 
 
-//        // Configurar o TextWatcher para as caixas de texto de origem e destino
-//        editOrigem.addTextChangedListener(new TextWatcher() {
-//            private CharSequence beforeText;
-//
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//                beforeText = charSequence;
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//                String newText = editable.toString();
-//                handler.removeCallbacks(autocompleteRunnable);
-//                handler.postDelayed(() -> consultarSugestoes(editOrigem, autoCompleteAdapterOrigem), AUTOCOMPLETE_DELAY);
-//            }
-//
-//        });
-//
-//        editDestino.addTextChangedListener(new TextWatcher() {
-//            private CharSequence beforeText;
-//
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//                beforeText = charSequence;
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//                // Não é necessário implementar isso
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//                String newText = editable.toString();
-//                handler.removeCallbacks(autocompleteRunnable);
-//                handler.postDelayed(() -> consultarSugestoes(editDestino, autoCompleteAdapterDestino), AUTOCOMPLETE_DELAY);
-//            }
-//        });
-
-
-//        return view;
-
-
-
 }
 
         // Método para exibir o diálogo de exclusão
@@ -384,65 +371,30 @@ public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterList
     }
 
 
+    public void openPlaceAutocompleteOrigem(int requestCodeOrigem) {
+        openPlaceAutocomplete(REQUEST_CODE_ORIGEM, "Forneça a origem");
+    }
 
-//    private void consultarSugestoes(AutoCompleteTextView autoCompleteTextView, ArrayAdapter<String> adapter) {
-//        String textoDigitado = autoCompleteTextView.getText().toString().trim();
-//
-//        if (!textoDigitado.isEmpty()) {
-//            MapboxGeocoding geocodingService = MapboxGeocoding.builder()
-//                    .accessToken(fragment.getResources().getString(R.string.mapbox_access_token))
-//                    .query(textoDigitado)
-//                    .geocodingTypes(GeocodingCriteria.TYPE_POI)
-//                    .languages("pt-BR")
-//                    .country("BR")
-//                    .build();
-//
-//            geocodingService.enqueueCall(new Callback<GeocodingResponse>() {
-//                @Override
-//                public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
-//                    if (response.isSuccessful() && response.body() != null) {
-//                        List<CarmenFeature> features = response.body().features();
-//                        if (features.size() >= 2) {
-//                            sugestoesUnicas.clear();
-//
-//                            for (CarmenFeature feature : features) {
-//                                String cidade = "";
-//                                String estado = "";
-//                                String pais = "";
-//
-//                                for (CarmenContext context : feature.context()) {
-//                                    String type = context.id();
-//                                    String text = context.text();
-//
-//                                    if (type.startsWith("place")) {
-//                                        cidade = text;
-//                                    } else if (type.startsWith("region")) {
-//                                        estado = text;
-//                                    } else if (type.startsWith("country")) {
-//                                        pais = text;
-//                                    }
-//                                }
-//
-//                                String sugestao = cidade + " " + estado + ", " + pais;
-//                                sugestoesUnicas.add(sugestao);
-//                            }
-//
-//                            adapter.clear();
-//                            adapter.addAll(new ArrayList<>(sugestoesUnicas));
-//                            adapter.notifyDataSetChanged();
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(Call<GeocodingResponse> call, Throwable t) {
-//                    Toast.makeText(fragment.getActivity(), "Algo deu errado, verifique sua conexão!", Toast.LENGTH_LONG).show();
-//                }
-//            });
-//        } else {
-//            adapter.clear();
-//            adapter.notifyDataSetChanged();
-//        }
-//    }
+    public void openPlaceAutocompleteDestino(int requestCodeOrigem) {
+        openPlaceAutocomplete(REQUEST_CODE_DESTINO, "Forneça o destino");
+    }
+
+    private void openPlaceAutocomplete(int requestCode, String title) {
+        if (fragment != null) {
+            Intent intent = new PlaceAutocomplete.IntentBuilder()
+                    .accessToken(fragment.getResources().getString(R.string.mapbox_access_token))
+                    .placeOptions(PlaceOptions.builder()
+                            .backgroundColor(Color.parseColor("#23238E"))
+                            .hint(title)
+                            .limit(10)
+                            .country("BR")
+                            .language("pt-BR")
+                            .build(PlaceOptions.MODE_CARDS))
+                    .build(fragment.requireActivity());
+
+            fragment.startActivityForResult(intent, requestCode);
+        }
+    }
+
 }
 
