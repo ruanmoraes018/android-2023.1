@@ -203,6 +203,65 @@ public class Dao extends SQLiteOpenHelper {
         c.close();
         return null;
     }
+    public Pessoa buscaInfoUsuario(String email){
+        String tipoUsuario = determineUserType(email);
+
+        if ("Passageiro".equals(tipoUsuario)) {
+            return buscaInfoPassageiro(email);
+        } else if ("Motorista".equals(tipoUsuario)) {
+            return buscaInfoMotorista(email);
+        }
+
+        return null;
+    }
+
+    private String determineUserType(String email) {
+        // Implemente sua lógica para determinar o tipo de usuário com base no email.
+        // Pode ser consultando o banco de dados ou usando algum outro critério.
+
+        // Exemplo:
+        if (isMotorista(email)) {
+            return "Motorista";
+        } else if (isPassageiro(email)) {
+            return "Passageiro";
+        }
+
+        // Se não for nem motorista nem passageiro, retorne o tipo desconhecido
+        return "Desconhecido";
+    }
+
+    private boolean isMotorista(String email) {
+        SQLiteDatabase db = getReadableDatabase();
+        String sql = "SELECT COUNT(*) FROM pessoas WHERE pessoas_tipo = 'Motorista' AND pessoas_email = ?";
+        Cursor c = db.rawQuery(sql, new String[]{email});
+
+        if (c.moveToFirst()) {
+            int count = c.getInt(0);
+            c.close();
+            return count > 0; // Se o count for maior que 0, o email corresponde a um motorista
+        }
+
+        c.close();
+        return false; // Caso contrário, não corresponde a um motorista
+    }
+
+    private boolean isPassageiro(String email) {
+        SQLiteDatabase db = getReadableDatabase();
+        String sql = "SELECT COUNT(*) FROM pessoas WHERE pessoas_tipo = 'Passageiro' AND pessoas_email = ?";
+        Cursor c = db.rawQuery(sql, new String[]{email});
+
+        if (c.moveToFirst()) {
+            int count = c.getInt(0);
+            c.close();
+            return count > 0; // Se o count for maior que 0, o email corresponde a um passageiro
+        }
+
+        c.close();
+        return false; // Caso contrário, não corresponde a um passageiro
+    }
+
+// Implemente o método consultaAoBanco para verificar se o email corresponde ao tipo especificado.
+
     public String buscarTipoPessoa(String email, String senha) {
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT pessoas_tipo FROM pessoas WHERE pessoas_email = ? AND pessoas_senha = ?";

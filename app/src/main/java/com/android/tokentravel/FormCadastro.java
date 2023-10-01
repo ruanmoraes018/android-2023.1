@@ -217,6 +217,7 @@ public class FormCadastro extends AppCompatActivity {
                     containerComponents.getLayoutParams().height = 1040;
                     containerComponents.requestLayout();
                     cadastrarPassageiro();
+                    Toast.makeText(getApplicationContext(), "Passageiro cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
                 }
                 if (tipoPessoa.equals("Motorista")) {
                     if (TextUtils.isEmpty(editTextNome.getText().toString())) {
@@ -276,6 +277,7 @@ public class FormCadastro extends AppCompatActivity {
                     containerComponents.getLayoutParams().height = 1500;
                     containerComponents.requestLayout();
                     cadastrarMotorista();
+                    Toast.makeText(getApplicationContext(), "Motorista cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
                 }
             }
         });

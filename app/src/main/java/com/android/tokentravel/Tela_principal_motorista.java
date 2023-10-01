@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -14,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Tela_principal_motorista extends AppCompatActivity {
 
@@ -22,6 +25,8 @@ public class Tela_principal_motorista extends AppCompatActivity {
     private Button buttoncadastar_rota;
     private boolean isCadastrarRotaFragmentLoaded = false;
     private boolean isMenuButtonEnabled = true; // Variável para controlar o estado do botão de menu
+    private static final int DOUBLE_BACK_EXIT_DELAY = 2000; // Tempo limite para pressionar o botão voltar novamente (2 segundos)
+    private boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,8 +137,18 @@ public class Tela_principal_motorista extends AppCompatActivity {
                     return true;
                 }
                 else if (item.getItemId() == R.id.deslogar) {
-                    // Implemente a ação para o item "Deslogar" aqui
-                    // Exemplo: finish(); // Encerra a atividade atual
+                    // Item de deslogar da aplicação.
+                    // Limpe o token de autenticação das preferências compartilhadas
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.remove("authToken");
+                    editor.apply();
+
+                    // Redirecione para a tela de login
+                    Intent intent = new Intent(Tela_principal_motorista.this, Form_Login.class);
+                    startActivity(intent);
+                    finish(); // Encerre a tela de navegação
+                    Toast.makeText(getApplicationContext(), "Obrigado por usar o TokenTravel, até logo!", Toast.LENGTH_SHORT).show();
                     loadCadastrarRotaFragment(); // Talvez precise remover essa linha, quando deslocar. Por enquanto ela fica aqui.
                     return true;
                 } else {
@@ -162,7 +177,21 @@ public class Tela_principal_motorista extends AppCompatActivity {
             loadCadastrarRotaFragment();
             super.onBackPressed();
         } else {
-            super.onBackPressed();
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                finishAffinity(); // Fecha todas as atividades no aplicativo
+            } else {
+                doubleBackToExitPressedOnce = true;
+                Toast.makeText(this, "Pressione voltar novamente para sair", Toast.LENGTH_SHORT).show();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        doubleBackToExitPressedOnce = false;
+                    }
+                }, DOUBLE_BACK_EXIT_DELAY);
+            }
         }
     }
+
 }

@@ -21,6 +21,9 @@ import com.android.tokentravel.objetos.Rotas;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
 
+import static com.android.tokentravel.AdapterListarRotasFragment.REQUEST_CODE_DESTINO;
+import static com.android.tokentravel.AdapterListarRotasFragment.REQUEST_CODE_ORIGEM;
+
 import java.util.ArrayList;
 import java.util.List;
 

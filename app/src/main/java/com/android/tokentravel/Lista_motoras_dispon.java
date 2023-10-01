@@ -1,6 +1,10 @@
 package com.android.tokentravel;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,6 +21,16 @@ public class Lista_motoras_dispon extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_motoras_dispon);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String origem = sharedPreferences.getString("nomeOrigem", "");
+        String destino = sharedPreferences.getString("nomeDestino", "");
+
+        TextView origemTextView = findViewById(R.id.origemfinal);
+        TextView destinoTextView = findViewById(R.id.destinofinal);
+
+        origemTextView.setText(origem);
+        destinoTextView.setText(destino);
 
         recyclerView = findViewById(R.id.recyclerView); // Certifique-se de que o RecyclerView tenha um ID no seu layout XML.
 

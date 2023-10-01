@@ -5,12 +5,14 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -253,6 +255,15 @@ public class PesquisaRota extends AppCompatActivity {
                                 intent.putExtra("latitudeDestino", latitudeDestino);
                                 intent.putExtra("longitudeDestino", longitudeDestino);
                                 startActivity(intent);
+                                Spinner spinnerUserType = findViewById(R.id.spinner_user_type);
+                                String dia = spinnerUserType.getSelectedItem().toString();
+
+                                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("nomeOrigem", enderecoOrigem);
+                                editor.putString("nomeDestino", enderecoDestino);
+                                editor.putString("diaSemana", dia);
+                                editor.apply();
                             }
                         }
 

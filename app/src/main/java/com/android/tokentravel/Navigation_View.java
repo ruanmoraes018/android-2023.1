@@ -7,9 +7,12 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -63,6 +66,8 @@ public class Navigation_View extends AppCompatActivity {
     private LocationCallback locationCallback;
     private SymbolLayer iconLayer;
     private GeoJsonSource iconGeoJsonSource;
+    private static final int DOUBLE_BACK_EXIT_DELAY = 2000; // Tempo limite para pressionar o botão voltar novamente (2 segundos)
+    private boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +137,17 @@ public class Navigation_View extends AppCompatActivity {
                     botaoPesquisarRota.setVisibility(View.GONE);
                 } else {
                     // Item de deslogar da aplicação.
+                    // Limpe o token de autenticação das preferências compartilhadas
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.remove("authToken");
+                    editor.apply();
+
+                    // Redirecione para a tela de login
+                    Intent intent = new Intent(Navigation_View.this, Form_Login.class);
+                    startActivity(intent);
+                    finish(); // Encerre a tela de navegação
+                    Toast.makeText(getApplicationContext(), "Obrigado por usar o TokenTravel, até logo!", Toast.LENGTH_SHORT).show();
                 }
 
                 return true;
@@ -182,7 +198,20 @@ public class Navigation_View extends AppCompatActivity {
                 botaoPesquisarRota.setVisibility(View.VISIBLE);
             }
         } else {
-            super.onBackPressed();
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+                finishAffinity(); // Fecha todas as atividades no aplicativo
+            } else {
+                doubleBackToExitPressedOnce = true;
+                Toast.makeText(this, "Pressione voltar novamente para sair", Toast.LENGTH_SHORT).show();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        doubleBackToExitPressedOnce = false;
+                    }
+                }, DOUBLE_BACK_EXIT_DELAY);
+            }
         }
     }
 
