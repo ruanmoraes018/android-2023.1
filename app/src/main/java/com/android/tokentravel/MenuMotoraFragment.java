@@ -50,8 +50,8 @@ public class MenuMotoraFragment extends Fragment {
         button = view.findViewById(R.id.btnfoto2);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String nomeDoMotorista = sharedPreferences.getString("nomeDoMotoristaLogado", "");
-        String emailDoMotorista = sharedPreferences.getString("emailDoMotoristaLogado", "");
+        String nomeDoMotorista = sharedPreferences.getString("nomeDoUsuarioLogado", "");
+        String emailDoMotorista = sharedPreferences.getString("emailDoUsuarioLogado", "");
 
         TextView nomeDoMotoristaTextView = view.findViewById(R.id.nomeDoMotoristaTextView);
         TextView emailDoMotoristaTextView = view.findViewById(R.id.emailDoMotoristaTextView);

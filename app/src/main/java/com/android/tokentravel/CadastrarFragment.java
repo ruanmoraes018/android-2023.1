@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,9 @@ import android.content.Intent;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class CadastrarFragment extends Fragment {
@@ -128,7 +132,51 @@ public class CadastrarFragment extends Fragment {
 
                     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
                     Integer idDoMotoristaLogado = sharedPreferences.getInt("idDoMotoristaLogado", 0);
-                    String emailDoMotoristaLogado = sharedPreferences.getString("emailDoMotoristaLogado", "");
+                    String emailDoMotoristaLogado = sharedPreferences.getString("emailDoUsuarioLogado", "");
+
+                    String infoOrigem = editTextOrigem.getText().toString();
+                    String infoDestino = editTextDestino.getText().toString();
+                    String infoNomeMotorista = sharedPreferences.getString("nomeDoUsuarioLogado", "");
+                    String infoHorario = editTextHorarioIda.getText().toString();
+                    String infoValor = editTextValor.getText().toString();
+                    String infoTipo = spinnerOutro.getSelectedItem().toString();
+
+                    List<String> diasDaSemanaSelecionados = new ArrayList<>();
+                    if (checkBoxDomingo.isChecked()) {
+                        diasDaSemanaSelecionados.add("Domingo");
+                    }
+                    if (checkBoxSegunda.isChecked()) {
+                        diasDaSemanaSelecionados.add("Segunda");
+                    }
+                    if (checkBoxTerca.isChecked()) {
+                        diasDaSemanaSelecionados.add("Terça");
+                    }
+                    if (checkBoxQuarta.isChecked()) {
+                        diasDaSemanaSelecionados.add("Quarta");
+                    }
+                    if (checkBoxQuinta.isChecked()) {
+                        diasDaSemanaSelecionados.add("Quinta");
+                    }
+                    if (checkBoxSexta.isChecked()) {
+                        diasDaSemanaSelecionados.add("Sexta");
+                    }
+                    if (checkBoxSabado.isChecked()) {
+                        diasDaSemanaSelecionados.add("Sábado");
+                    }
+
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("emailDoMotorista", emailDoMotoristaLogado);
+                    editor.putString("origemRota", infoOrigem);
+                    editor.putString("destinoRota", infoDestino);
+                    editor.putString("nomeDoMotorista", infoNomeMotorista);
+                    editor.putString("horarioRota", infoHorario);
+                    editor.putString("valorRota", infoValor);
+                    editor.putString("tipoVeiculo", infoTipo);
+
+                    editor.putString("diasDaSemana", TextUtils.join(",", diasDaSemanaSelecionados));
+                    editor.apply();
+
+
 
                     Rotas rotas = new Rotas(
                             editTextOrigem.getText().toString(),
@@ -148,6 +196,8 @@ public class CadastrarFragment extends Fragment {
 
                     Dao dao = new Dao(requireContext());
                     long rotaId = dao.inserirRota(rotas);
+                    Toast.makeText(getContext(), "Rota cadastrada com sucesso!", Toast.LENGTH_SHORT).show();
+
 
                     if (true) {
 
@@ -157,7 +207,7 @@ public class CadastrarFragment extends Fragment {
                         transaction.replace(R.id.fragment_cadastrarrota, verRotasFragment);
                         transaction.commit();
 
-                        String email = sharedPreferences.getString("emailDoMotoristaLogado", "");
+                        String email = sharedPreferences.getString("emailDoUsuarioLogado", "");
 
                         Toast.makeText(getContext(), "Rota cadastrada com sucesso!", Toast.LENGTH_SHORT).show();
                         Log.d("CadastroRota", "Rota cadastrada com sucesso!");
@@ -176,6 +226,8 @@ public class CadastrarFragment extends Fragment {
                         Log.d("CadastroRota", "Quinta: " + rotas.isQuinta());
                         Log.d("CadastroRota", "Sexta: " + rotas.isSexta());
                         Log.d("CadastroRota", "Sábado: " + rotas.isSabado());
+
+
                     } else {
                         Toast.makeText(getContext(), "Ocorreu um erro ao cadastrar rota!", Toast.LENGTH_SHORT).show();
                     }

@@ -113,6 +113,7 @@ public class Form_Login extends AppCompatActivity {
                                 }
 
                                 // Salvar informações do usuário nas preferências compartilhadas
+                                int idDoMotorista = dao.buscaIdMotorista(email);
                                 String nomeUsuario = dao.buscaInfoUsuario(email).getPessoa_nome();
                                 String tipoDaPessoaAutenticada = tipoUsuario;
                                 String emailDoUsuarioAutenticado = email;
@@ -120,6 +121,7 @@ public class Form_Login extends AppCompatActivity {
 
                                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putInt("idDoMotoristaLogado", idDoMotorista);
                                 editor.putString("nomeDoUsuarioLogado", nomeUsuario);
                                 editor.putString("tipoDaPessoaLogada", tipoDaPessoaAutenticada);
                                 editor.putString("emailDoUsuarioLogado", emailDoUsuarioAutenticado);

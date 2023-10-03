@@ -38,7 +38,7 @@ public class Tela_principal_motorista extends AppCompatActivity {
         buttoncadastar_rota = findViewById(R.id.button1);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(Tela_principal_motorista.this);
-        String nomeDoMotorista = sharedPreferences.getString("nomeDoMotoristaLogado", "");
+        String nomeDoMotorista = sharedPreferences.getString("nomeDoUsuarioLogado", "");
 
         // Dividir o nome completo em palavras
         String[] nomePartes = nomeDoMotorista.split(" ");

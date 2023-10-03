@@ -9,6 +9,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.tokentravel.dao.Dao;
+import com.android.tokentravel.objetos.Rotas;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,6 +19,7 @@ public class Lista_motoras_dispon extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private Adapter_motoristas adapter;
+    private Dao dao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,32 +41,20 @@ public class Lista_motoras_dispon extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new Adapter_motoristas(getList());
+        // Inicialize o objeto dao passando o contexto da atividade
+        dao = new Dao(this);
+
+        // Chame o método para buscar as rotas disponíveis com base na origem e destino
+        List<Rotas> rotasDisponiveis = buscaRotasDisponiveis(origem, destino);
+
+        // Passe o contexto e a lista de rotas para o Adapter_motoristas
+        adapter = new Adapter_motoristas(this, rotasDisponiveis);
+
         recyclerView.setAdapter(adapter);
     }
 
-    private List<String> getList() {
-        return Arrays.asList(
-                "Maria da Silva Santos",
-                "João Pereira Alves",
-                "Ana Carolina Oliveira",
-                "Pedro Henrique Lima",
-                "Luiza Fernandes Costa",
-                "Rafael Souza Rodrigues",
-                "Julia Martins Pereira",
-                "Diego Oliveira Cardoso",
-                "Camila Santos Silva",
-                "André Almeida Fernandes",
-                "Laura Costa Gomes",
-                "Bruno Rodrigues Castro",
-                "Isabela Ramos Santos",
-                "Lucas Oliveira Pereira",
-                "Carolina Castro Lima",
-                "Guilherme Fernandes Carvalho",
-                "Mariana Alves Rodrigues",
-                "Leonardo Gomes Silva",
-                "Amanda Pereira Oliveira",
-                "Tiago Santos Almeida"
-        );
+    private List<Rotas> buscaRotasDisponiveis(String origem, String destino) {
+        // Chame o método do DAO para buscar as rotas disponíveis com base na origem e destino
+        return dao.buscaRotasDisponiveis(origem, destino);
     }
 }

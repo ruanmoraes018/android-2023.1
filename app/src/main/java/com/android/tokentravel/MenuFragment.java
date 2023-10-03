@@ -49,8 +49,8 @@ public class MenuFragment extends Fragment {
         button = view.findViewById(R.id.btnfoto);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String nomeDoPassageiro = sharedPreferences.getString("nomeDoPassageiroLogado", "");
-        String emailDoPassageiro = sharedPreferences.getString("emailDoPassageiroLogado", "");
+        String nomeDoPassageiro = sharedPreferences.getString("nomeDoUsuarioLogado", "");
+        String emailDoPassageiro = sharedPreferences.getString("emailDoUsuarioLogado", "");
 
         TextView nomeDoPassageiroTextView = view.findViewById(R.id.nomeDoPassageiroTextView);
         TextView emailDoPassageiroTextView = view.findViewById(R.id.emailDoPassageiroTextView);

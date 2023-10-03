@@ -42,15 +42,15 @@
         <AutoCompleteTextView
             android:id="@+id/edit_origem"
             style="@style/Edit_Text"
-            android:padding="10dp"
-            android:hint="Ex: Capanema, Pará, Brasil"
             android:drawableRight="@drawable/ic_local_initial"
-            android:maxLength="50"
+            android:hint="Ex: Capanema, Pará, Brasil"
             android:inputType="text"
-            app:layout_constraintTop_toTopOf="@id/containerComponents"
-            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            android:maxLength="50"
+            android:padding="10dp"
             app:layout_constraintEnd_toEndOf="@id/containerComponents"
-            />
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintTop_toTopOf="@id/containerComponents"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <ImageView
             android:id="@+id/autcompleteorigemcampocadastrar"
@@ -63,67 +63,68 @@
             app:layout_constraintBottom_toBottomOf="@+id/edit_origem"
             app:layout_constraintEnd_toEndOf="@+id/edit_origem"
             app:layout_constraintTop_toTopOf="@+id/edit_origem"
-            tools:ignore="HardcodedText,TouchTargetSizeCheck" />
+            tools:ignore="HardcodedText,TouchTargetSizeCheck,SpeakableTextPresentCheck" />
         <!--        android:src="@drawable/ic_local_initial"-->
 
         <AutoCompleteTextView
             android:id="@+id/edit_destino"
             style="@style/Edit_Text"
-            android:padding="10dp"
-            android:hint="Ex: Capitão Poço, Pará, Brasil"
             android:drawableRight="@drawable/ic_local_destiny"
-            android:maxLength="50"
+            android:hint="Ex: Capitão Poço, Pará, Brasil"
             android:inputType="text"
-            app:layout_constraintTop_toBottomOf="@id/edit_origem"
-            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            android:maxLength="50"
+            android:padding="10dp"
             app:layout_constraintEnd_toEndOf="@id/containerComponents"
-            />
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintTop_toBottomOf="@id/edit_origem"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <ImageView
             android:id="@+id/autcompletedestinocampocadastrar"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="end"
-            android:clickable="true"
             android:layout_marginEnd="10dp"
+            android:clickable="true"
             android:focusable="true"
             app:layout_constraintBottom_toBottomOf="@+id/edit_destino"
             app:layout_constraintEnd_toEndOf="@+id/edit_destino"
             app:layout_constraintTop_toTopOf="@+id/edit_destino"
-            tools:ignore="HardcodedText,TouchTargetSizeCheck" />
+            tools:ignore="HardcodedText,TouchTargetSizeCheck,SpeakableTextPresentCheck" />
         <!--        android:src="@drawable/ic_local_destiny"-->
 
         <Spinner
             android:id="@+id/edit_tipo_veiculo"
             style="@style/Edit_Text"
-            android:padding="0dp"
             android:hint="Tipo de Veículo"
-            app:layout_constraintTop_toBottomOf="@id/edit_destino"
-            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            android:padding="0dp"
             app:layout_constraintEnd_toEndOf="@id/containerComponents"
-            />
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintTop_toBottomOf="@id/edit_destino"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <EditText
             android:id="@+id/edit_valor"
             style="@style/Edit_Text"
-            android:padding="10dp"
             android:hint="Valor"
             android:inputType="numberDecimal"
-            app:layout_constraintTop_toBottomOf="@id/edit_tipo_veiculo"
-            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            android:padding="10dp"
             app:layout_constraintEnd_toEndOf="@id/containerComponents"
-            />
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintTop_toBottomOf="@id/edit_tipo_veiculo"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <EditText
             android:id="@+id/edit_horario_ida"
             style="@style/Edit_Text"
-            android:padding="10dp"
+            android:format="HH:mm"
             android:hint="Horário de Ida"
-            android:inputType="text"
-            app:layout_constraintTop_toBottomOf="@id/edit_valor"
-            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            android:inputType="time"
+            android:padding="10dp"
             app:layout_constraintEnd_toEndOf="@id/containerComponents"
-            />
+            app:layout_constraintStart_toStartOf="@id/containerComponents"
+            app:layout_constraintTop_toBottomOf="@id/edit_valor"
+            tools:ignore="TouchTargetSizeCheck,TouchTargetSizeCheck" />
 
 
         <TextView

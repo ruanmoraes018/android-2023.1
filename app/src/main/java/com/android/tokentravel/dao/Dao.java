@@ -547,9 +547,93 @@ public class Dao extends SQLiteOpenHelper {
             db.close();
         }
     }
+    public ArrayList<Rotas> buscaRotasDisponiveis(String origem, String destino) {
+        ArrayList<Rotas> rotasList = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
 
+        // Consulta SQL para buscar rotas com base na origem e destino
+        String sql_busca_rotas = "SELECT r.*, ds.* FROM rotas r " +
+                "INNER JOIN dias_semanas ds ON r.id_dias_semanas = ds.dias_semana_id " +
+                "WHERE r.origem_rota = ? AND r.destino_rota = ?";
 
+        Cursor c = db.rawQuery(sql_busca_rotas, new String[]{origem, destino});
 
+        while (c.moveToNext()) {
+            @SuppressLint("Range") int numeroRota = c.getInt(c.getColumnIndex("numeroRota"));
+            @SuppressLint("Range") String origemRota = c.getString(c.getColumnIndex("origem_rota"));
+            @SuppressLint("Range") String destinoRota = c.getString(c.getColumnIndex("destino_rota"));
+            @SuppressLint("Range") String tipoRota = c.getString(c.getColumnIndex("tipo_veiculo"));
+            @SuppressLint("Range") float valorRota = c.getFloat(c.getColumnIndex("valor_rota"));
+            @SuppressLint("Range") String horarioRota = c.getString(c.getColumnIndex("horario_rota"));
+            @SuppressLint("Range")  int idMotorista = c.getInt(c.getColumnIndex("id_motoristas"));
 
+            @SuppressLint("Range")
+            boolean domingo = c.getString(c.getColumnIndex("domingo")).equals("true");
+            @SuppressLint("Range")
+            boolean segunda = c.getString(c.getColumnIndex("segunda")).equals("true");
+            @SuppressLint("Range")
+            boolean terca = c.getString(c.getColumnIndex("terca")).equals("true");
+            @SuppressLint("Range")
+            boolean quarta = c.getString(c.getColumnIndex("quarta")).equals("true");
+            @SuppressLint("Range")
+            boolean quinta = c.getString(c.getColumnIndex("quinta")).equals("true");
+            @SuppressLint("Range")
+            boolean sexta = c.getString(c.getColumnIndex("sexta")).equals("true");
+            @SuppressLint("Range")
+            boolean sabado = c.getString(c.getColumnIndex("sabado")).equals("true");
+
+            // Mapeia os nomes dos dias da semana às variáveis booleanas
+            Map<String, Boolean> diasSemana = new HashMap<>();
+            diasSemana.put("domingo", domingo);
+            diasSemana.put("segunda", segunda);
+            diasSemana.put("terca", terca);
+            diasSemana.put("quarta", quarta);
+            diasSemana.put("quinta", quinta);
+            diasSemana.put("sexta", sexta);
+            diasSemana.put("sabado", sabado);
+
+            // Crie uma lista para armazenar os nomes dos dias da semana que são verdadeiros
+            List<String> diasAtivos = new ArrayList<>();
+            for (Map.Entry<String, Boolean> entry : diasSemana.entrySet()) {
+                if (entry.getValue()) {
+                    diasAtivos.add(entry.getKey());
+                }
+            }
+
+            // Crie um objeto Rotas com base nos dados encontrados no banco de dados
+            Rotas rota = new Rotas(
+                    numeroRota,
+                    origemRota,
+                    destinoRota,
+                    tipoRota,
+                    valorRota,
+                    horarioRota,
+                    idMotorista,
+                    diasAtivos // Aqui, passamos a lista de nomes dos dias ativos
+            );
+
+            rotasList.add(rota);
+        }
+
+        c.close();
+        return rotasList;
+    }
+    public String buscaNomeMotoristaPorId(int idMotorista) {
+        SQLiteDatabase db = getReadableDatabase();
+        String sql = "SELECT pessoas_nome FROM motoristas " +
+                "INNER JOIN pessoas ON motoristas.id_pessoas = pessoas.pessoas_id " +
+                "WHERE motoristas_id = ?;";
+
+        Cursor c = db.rawQuery(sql, new String[]{String.valueOf(idMotorista)});
+
+        if (c.moveToFirst()) {
+            String nomeDoMotorista = c.getString(0);
+            c.close();
+            return nomeDoMotorista;
+        } else {
+            c.close();
+            return null; // Retorna null se o motorista não for encontrado
+        }
+    }
 
 }

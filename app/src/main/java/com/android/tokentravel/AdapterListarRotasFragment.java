@@ -303,6 +303,7 @@ public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterList
                             // Chame o método atualizarRota do Dao para persistir as alterações no banco de dados
                             Dao dao = new Dao(context);
                             int linhasAfetadas = dao.atualizarRota(idDoMotoristaLogado, idRota, rota);
+                            Toast.makeText(context, "Rota atualizada com sucesso!", Toast.LENGTH_SHORT).show();
 
                             if (linhasAfetadas > 0) {
                                 // Atualização bem-sucedida
@@ -346,6 +347,8 @@ public class AdapterListarRotasFragment extends RecyclerView.Adapter<AdapterList
 
                             Dao dao = new Dao(context);
                             int linhasAfetadas = dao.deletarRota(idDoMotoristaLogado, idRota);                        // Atualize o RecyclerView após a exclusão
+                            Toast.makeText(context, "Rota deletada com sucesso!", Toast.LENGTH_SHORT).show();
+
                             if (linhasAfetadas > 0) {
                                 // Atualização bem-sucedida
                                 fragment.recarregarFragmento();
