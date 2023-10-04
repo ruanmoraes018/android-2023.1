@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Base64;
 import android.util.Log;
 import android.database.Cursor;
 import com.android.tokentravel.objetos.Motorista;
@@ -32,6 +33,7 @@ public class Dao extends SQLiteOpenHelper {
                 "pessoas_email TEXT UNIQUE NOT NULL, " +
                 "pessoas_senha TEXT NOT NULL, " +
                 "pessoas_telefone TEXT NOT NULL, " +
+                "foto TEXT, " +
                 "pessoas_tipo TEXT);";
         db.execSQL(sql_pessoas);
 
@@ -438,6 +440,33 @@ public class Dao extends SQLiteOpenHelper {
         c.close();
         return -1; // Retorna -1 se não encontrar o motorista
     }
+
+    public int buscaIdPassageiro(String email) {
+        SQLiteDatabase db = getReadableDatabase();
+        String sql_busca_passageiro = "SELECT id_pessoas FROM passageiros " +
+                "INNER JOIN pessoas ON passageiros.id_pessoas = pessoas.pessoas_id " +
+                "WHERE pessoas_email = ?;";
+        Cursor c = db.rawQuery(sql_busca_passageiro, new String[]{email});
+
+        if (c.moveToFirst()) {
+            int idPassageiro = c.getInt(0);
+            c.close();
+
+            // Adicione um log para verificar se está obtendo o ID do passageiro
+            Log.d("ID_PASSAGEIRO", "ID do Passageiro Obtido: " + idPassageiro);
+
+            return idPassageiro;
+        }
+        c.close();
+
+        // Adicione um log para indicar que o passageiro não foi encontrado
+        Log.d("ID_PASSAGEIRO", "Passageiro não encontrado com o email: " + email);
+
+        return -1; // Retorna -1 se não encontrar o passageiro
+    }
+
+
+
     public int atualizarRota(Integer idDoMotoristaLogado, int idRota, Rotas rota) {
         if (rota == null) {
             Log.e("DAO", "Tentativa de atualizar uma rota nula.");
@@ -636,4 +665,75 @@ public class Dao extends SQLiteOpenHelper {
         }
     }
 
+    @SuppressLint("Range")
+    public byte[] obterFotoMotorista(int idMotorista) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT pessoas.foto FROM motoristas " +
+                "INNER JOIN pessoas ON motoristas.id_pessoas = pessoas.pessoas_id " +
+                "WHERE motoristas.motoristas_id = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(idMotorista)});
+
+        byte[] imageBytes = null;
+
+        if (cursor != null && cursor.moveToFirst()) {
+            String imageString = cursor.getString(cursor.getColumnIndex("foto"));
+            cursor.close();
+
+            // Decodificar a string Base64 em um array de bytes
+            imageBytes = Base64.decode(imageString, Base64.DEFAULT);
+
+            // Adicione um log para saber se a foto foi obtida com sucesso
+            Log.d("ObterFotoMotorista", "Foto do motorista obtida com sucesso" + imageBytes);
+        } else {
+            // Adicione um log para saber que a foto não foi encontrada
+            Log.d("ObterFotoMotorista", "Foto do motorista não encontrada");
+        }
+
+        return imageBytes;
+    }
+
+
+
+
+
+
+    public boolean salvarFoto(int idPessoa, String caminhoDaFoto) {
+        SQLiteDatabase db = getWritableDatabase();
+        try {
+            ContentValues values = new ContentValues();
+            values.put("foto", caminhoDaFoto);
+
+            int rowsAffected = db.update("pessoas", values, "pessoas_id = ?", new String[]{String.valueOf(idPessoa)});
+
+            if (rowsAffected > 0) {
+                Log.d("DAO", "Foto salva com sucesso para a pessoa com ID: " + idPessoa);
+            } else {
+                Log.e("DAO", "Nenhuma linha afetada ao salvar a foto para a pessoa com ID: " + idPessoa);
+            }
+
+            return rowsAffected > 0;
+        } catch (SQLiteException e) {
+            Log.e("DAO", "Erro ao salvar a foto: " + e.getMessage());
+            return false;
+        } finally {
+            db.close();
+        }
+    }
+
+    @SuppressLint("Range")
+    public String obterFoto(int idPessoa) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT foto FROM pessoas WHERE pessoas_id = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(idPessoa)});
+
+        String imageString = null;
+
+        if (cursor != null && cursor.moveToFirst()) {
+            imageString = cursor.getString(cursor.getColumnIndex("foto"));
+            cursor.close();
+            Log.d("ObterFotoMotorista", "Foto do motorista obtida com sucesso" + imageString);
+
+        }
+        return imageString;
+    }
 }

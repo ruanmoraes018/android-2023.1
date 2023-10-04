@@ -1,6 +1,5 @@
 package com.android.tokentravel;
 
-
 import static android.app.Activity.RESULT_OK;
 import android.Manifest;
 import android.app.AlertDialog;
@@ -13,22 +12,26 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
+import com.android.tokentravel.dao.Dao;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
-import java.io.File;
-import java.io.FileOutputStream;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class MenuMotoraFragment extends Fragment {
@@ -39,7 +42,8 @@ public class MenuMotoraFragment extends Fragment {
     private static final int REQUEST_GALLERY_PICK = 102;
     private static final int CAMERA_PERMISSION_REQUEST = 103;
     private static final int STORAGE_PERMISSION_REQUEST = 104;
-    private static final String IMAGE_FILE_NAME = "profile_image_motora.jpg"; // Nome do arquivo de imagem
+
+    private Dao Dao;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,6 +62,8 @@ public class MenuMotoraFragment extends Fragment {
 
         nomeDoMotoristaTextView.setText(nomeDoMotorista);
         emailDoMotoristaTextView.setText(emailDoMotorista);
+
+        Dao = new Dao(getContext());
 
         if (ContextCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -152,15 +158,33 @@ public class MenuMotoraFragment extends Fragment {
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_CAMERA_CAPTURE) {
                 Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                saveImage(bitmap); // Salve a imagem capturada
-                displaySelectedImage(bitmap);
+                String imageString = convertBitmapToString(bitmap);
+
+                // Chame a função salvarFoto com o ID da pessoa apropriado e a string da imagem
+                int idPessoa = obterIdDaPessoa();
+                if (idPessoa != -1) {
+                    boolean sucesso = Dao.salvarFoto(idPessoa, imageString);
+                    if (sucesso) {
+                        displaySelectedImage(bitmap);
+                    }
+                }
             } else if (requestCode == REQUEST_GALLERY_PICK) {
                 if (data != null && data.getData() != null) {
                     try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(
+                        Bitmap originalBitmap = MediaStore.Images.Media.getBitmap(
                                 requireActivity().getContentResolver(), data.getData());
-                        saveImage(bitmap); // Salve a imagem selecionada da galeria
-                        displaySelectedImage(bitmap);
+                        Bitmap resizedBitmap = resizeBitmap(originalBitmap, 800, 800); // Defina o tamanho máximo desejado
+
+                        String imageString = convertBitmapToString(resizedBitmap);
+
+                        // Chame a função salvarFoto com o ID da pessoa apropriado e a string da imagem
+                        int idPessoa = obterIdDaPessoa();
+                        if (idPessoa != -1) {
+                            boolean sucesso = Dao.salvarFoto(idPessoa, imageString);
+                            if (sucesso) {
+                                displaySelectedImage(resizedBitmap);
+                            }
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -169,33 +193,62 @@ public class MenuMotoraFragment extends Fragment {
         }
     }
 
+    private String convertBitmapToString(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    }
+
+    private Bitmap resizeBitmap(Bitmap originalBitmap, int maxWidth, int maxHeight) {
+        int width = originalBitmap.getWidth();
+        int height = originalBitmap.getHeight();
+
+        float aspectRatio = (float) width / (float) height;
+
+        if (width > maxWidth || height > maxHeight) {
+            if (aspectRatio > 1) {
+                width = maxWidth;
+                height = (int) (width / aspectRatio);
+            } else {
+                height = maxHeight;
+                width = (int) (height * aspectRatio);
+            }
+        }
+
+        return Bitmap.createScaledBitmap(originalBitmap, width, height, true);
+    }
+
+    private int obterIdDaPessoa() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
+        return sharedPreferences.getInt("idDoMotoristaLogado", -1);
+    }
+
     private void displaySelectedImage(Bitmap bitmap) {
         imageView.setImageBitmap(bitmap);
-        // Usar Glide para carregar a imagem na ImageView e aplicar a transformação de círculo
         Glide.with(this)
                 .load(bitmap)
                 .apply(RequestOptions.bitmapTransform(new CircleCrop()))
                 .into(imageView);
     }
 
-    private void saveImage(Bitmap bitmap) {
-        // Salvar a imagem no armazenamento interno do dispositivo
-        File file = new File(requireContext().getFilesDir(), IMAGE_FILE_NAME);
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void loadSavedImage() {
-        // Carregar a imagem salva, se existir
-        File file = new File(requireContext().getFilesDir(), IMAGE_FILE_NAME);
-        if (file.exists()) {
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-            displaySelectedImage(bitmap);
+        int idPessoa = obterIdDaPessoa();
+        if (idPessoa != -1) {
+            // Obtenha a string Base64 da imagem do banco de dados
+            String imageString = Dao.obterFoto(idPessoa);
+
+            if (imageString != null && !imageString.isEmpty()) {
+                // Decodifique a string Base64 em um array de bytes
+                byte[] decodedBytes = Base64.decode(imageString, Base64.DEFAULT);
+
+                // Crie um objeto Bitmap a partir do array de bytes decodificado
+                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+
+                // Exiba o objeto Bitmap no ImageView
+                displaySelectedImage(bitmap);
+            }
         }
     }
 }
+

@@ -12,13 +12,10 @@ import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.tokentravel.dao.Dao;
-import com.android.tokentravel.objetos.Motorista;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -67,6 +64,17 @@ public class Perfil_Apresent_RotaProf extends AppCompatActivity {
             // Divida a string nas vírgulas para obter a lista de dias da semana
             List<String> diasDaSemana = Arrays.asList(diasDaSemanaString.split(","));
 
+            // Obtenha a imagem passada através da Intent como um ByteArray
+            byte[] motoristaImageByteArray = intent.getByteArrayExtra("motoristaImage");
+            if (motoristaImageByteArray != null) {
+                Bitmap motoristaImage = BitmapFactory.decodeByteArray(motoristaImageByteArray, 0, motoristaImageByteArray.length);
+                // Aplicar a transformação de círculo à imagem usando Glide
+                Glide.with(this)
+                        .load(motoristaImage)
+                        .apply(RequestOptions.bitmapTransform(new CircleCrop()))
+                        .into(imageView);
+            }
+
             // Defina os valores nos TextViews
             nomeTextView.setText(nomeDoMotoristaRota);
             emailTextView.setText(emailDoMotoristaRota);
@@ -76,26 +84,6 @@ public class Perfil_Apresent_RotaProf extends AppCompatActivity {
             diasTextView.setText("Dia(s): " + TextUtils.join(", ", diasDaSemana));
             tipoVeiculoTextView.setText("Tipo: " + tipoVeiculo);
             valorTextView.setText("R$: " + valorRota);
-
-            // Carregue a imagem do motorista, se existir
-            loadMotoristaImage();
-        }
-    }
-
-    private void loadMotoristaImage() {
-        // Carregue a imagem do motorista salva, se existir
-        File file = new File(getFilesDir(), "profile_image_motora.jpg");
-        if (file.exists()) {
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-
-            // Aplicar a transformação de círculo à imagem usando Glide
-            Glide.with(this)
-                    .load(bitmap)
-                    .apply(RequestOptions.bitmapTransform(new CircleCrop()))
-                    .into(imageView);
         }
     }
 }
-
-
-

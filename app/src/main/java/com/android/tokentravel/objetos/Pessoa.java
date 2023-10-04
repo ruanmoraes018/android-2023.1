@@ -8,6 +8,7 @@ public class Pessoa {
     String pessoa_senha;
     String pessoa_tipo;
     String pessoa_telefone;
+    String foto;
 
     public Pessoa(String pessoa_nome, String pessoa_cpf, String pessoa_email, String pessoa_senha, String pessoa_telefone , String pessoa_tipo) {
         this.pessoa_nome = pessoa_nome;
@@ -64,5 +65,13 @@ public class Pessoa {
 
     public void setPessoa_telefone(String pessoa_telefone) {
         this.pessoa_telefone = pessoa_telefone;
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
     }
 }
