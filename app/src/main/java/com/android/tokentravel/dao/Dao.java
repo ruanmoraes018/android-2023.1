@@ -302,6 +302,7 @@ public class Dao extends SQLiteOpenHelper {
         c.close();
         return null;
     }
+
     public long inserirRota(Rotas rota) {
         SQLiteDatabase db = getWritableDatabase();
         try {
@@ -594,7 +595,7 @@ public class Dao extends SQLiteOpenHelper {
             @SuppressLint("Range") String tipoRota = c.getString(c.getColumnIndex("tipo_veiculo"));
             @SuppressLint("Range") float valorRota = c.getFloat(c.getColumnIndex("valor_rota"));
             @SuppressLint("Range") String horarioRota = c.getString(c.getColumnIndex("horario_rota"));
-            @SuppressLint("Range")  int idMotorista = c.getInt(c.getColumnIndex("id_motoristas"));
+            @SuppressLint("Range") int idMotorista = c.getInt(c.getColumnIndex("id_motoristas"));
 
             @SuppressLint("Range")
             boolean domingo = c.getString(c.getColumnIndex("domingo")).equals("true");
@@ -629,6 +630,12 @@ public class Dao extends SQLiteOpenHelper {
                 }
             }
 
+            // Adicione logs para verificar os dados das rotas enquanto percorre o cursor
+            Log.d("buscaRotasDisponiveis", "Número da Rota: " + numeroRota);
+            Log.d("buscaRotasDisponiveis", "Origem da Rota: " + origemRota);
+            Log.d("buscaRotasDisponiveis", "Destino da Rota: " + destinoRota);
+            Log.d("buscaRotasDisponiveis", "ID do Motorista: " + idMotorista);
+
             // Crie um objeto Rotas com base nos dados encontrados no banco de dados
             Rotas rota = new Rotas(
                     numeroRota,
@@ -647,50 +654,68 @@ public class Dao extends SQLiteOpenHelper {
         c.close();
         return rotasList;
     }
-    public String buscaNomeMotoristaPorId(int idMotorista) {
+
+    @SuppressLint("LongLogTag")
+    public List<String> buscaNomesMotoristasPorId(int idMotorista) {
         SQLiteDatabase db = getReadableDatabase();
-        String sql = "SELECT pessoas_nome FROM motoristas " +
+        String sql = "SELECT pessoas.pessoas_nome FROM motoristas " +
                 "INNER JOIN pessoas ON motoristas.id_pessoas = pessoas.pessoas_id " +
-                "WHERE motoristas_id = ?;";
+                "WHERE motoristas.motoristas_id = ? ;";
 
         Cursor c = db.rawQuery(sql, new String[]{String.valueOf(idMotorista)});
+        List<String> nomesMotoristas = new ArrayList<>();
 
         if (c.moveToFirst()) {
-            String nomeDoMotorista = c.getString(0);
-            c.close();
-            return nomeDoMotorista;
-        } else {
-            c.close();
-            return null; // Retorna null se o motorista não for encontrado
+            do {
+                String nomeDoMotorista = c.getString(0);
+                nomesMotoristas.add(nomeDoMotorista);
+
+                // Adicione logs para verificar os nomes dos motoristas
+                Log.d("buscaNomesMotoristasPorId", "Nome do Motorista: " + nomeDoMotorista);
+            } while (c.moveToNext());
         }
+
+        c.close();
+        return nomesMotoristas;
     }
 
     @SuppressLint("Range")
-    public byte[] obterFotoMotorista(int idMotorista) {
+    public List<byte[]> obterFotosMotorista(int idMotorista) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT pessoas.foto FROM motoristas " +
                 "INNER JOIN pessoas ON motoristas.id_pessoas = pessoas.pessoas_id " +
-                "WHERE motoristas.motoristas_id = ?";
+                "WHERE motoristas.motoristas_id = ? ;";
+
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(idMotorista)});
 
-        byte[] imageBytes = null;
+        List<byte[]> fotosMotorista = new ArrayList<>();
 
         if (cursor != null && cursor.moveToFirst()) {
-            String imageString = cursor.getString(cursor.getColumnIndex("foto"));
+            do {
+                String imageString = cursor.getString(cursor.getColumnIndex("foto"));
+
+                // Verifique se a string de imagem não está vazia
+                if (imageString != null && !imageString.isEmpty()) {
+                    // Decodificar a string Base64 em um array de bytes
+                    byte[] imageBytes = Base64.decode(imageString, Base64.DEFAULT);
+                    fotosMotorista.add(imageBytes);
+
+                    // Adicione um log para verificar quando uma foto é obtida
+                    Log.d("obterFotosMotorista", "Foto do Motorista obtida");
+                } else {
+                    // Adicione um log para identificar quando a string de imagem está vazia
+                    Log.d("obterFotosMotorista", "String de imagem vazia ou nula");
+                }
+            } while (cursor.moveToNext());
+
             cursor.close();
-
-            // Decodificar a string Base64 em um array de bytes
-            imageBytes = Base64.decode(imageString, Base64.DEFAULT);
-
-            // Adicione um log para saber se a foto foi obtida com sucesso
-            Log.d("ObterFotoMotorista", "Foto do motorista obtida com sucesso" + imageBytes);
-        } else {
-            // Adicione um log para saber que a foto não foi encontrada
-            Log.d("ObterFotoMotorista", "Foto do motorista não encontrada");
         }
 
-        return imageBytes;
+        return fotosMotorista;
     }
+
+
+
 
 
 
@@ -736,4 +761,107 @@ public class Dao extends SQLiteOpenHelper {
         }
         return imageString;
     }
+
+    public Rotas buscaRotaPorId(int motoristaId, int numeroRota) {
+        SQLiteDatabase db = getReadableDatabase();
+        String sql_busca_motorista = "SELECT r.*, ds.* FROM rotas r " +
+                "INNER JOIN dias_semanas ds ON r.id_dias_semanas = ds.dias_semana_id " +
+                "WHERE r.id_motoristas = ? AND r.numeroRota = ?";
+
+        Cursor c = db.rawQuery(sql_busca_motorista, new String[]{String.valueOf(motoristaId), String.valueOf(numeroRota)});
+
+        Rotas rota = null;
+
+        if (c.moveToFirst()) {
+            @SuppressLint("Range") String origemRota = c.getString(c.getColumnIndex("origem_rota"));
+            @SuppressLint("Range") String destinoRota = c.getString(c.getColumnIndex("destino_rota"));
+            @SuppressLint("Range") String tipoRota = c.getString(c.getColumnIndex("tipo_veiculo"));
+            @SuppressLint("Range") float valorRota = c.getFloat(c.getColumnIndex("valor_rota"));
+            @SuppressLint("Range") String horarioRota = c.getString(c.getColumnIndex("horario_rota"));
+            @SuppressLint("Range") int idMotorista = c.getInt(c.getColumnIndex("id_motoristas"));
+
+            @SuppressLint("Range")
+            boolean domingo = c.getString(c.getColumnIndex("domingo")).equals("true");
+            @SuppressLint("Range")
+            boolean segunda = c.getString(c.getColumnIndex("segunda")).equals("true");
+            @SuppressLint("Range")
+            boolean terca = c.getString(c.getColumnIndex("terca")).equals("true");
+            @SuppressLint("Range")
+            boolean quarta = c.getString(c.getColumnIndex("quarta")).equals("true");
+            @SuppressLint("Range")
+            boolean quinta = c.getString(c.getColumnIndex("quinta")).equals("true");
+            @SuppressLint("Range")
+            boolean sexta = c.getString(c.getColumnIndex("sexta")).equals("true");
+            @SuppressLint("Range")
+            boolean sabado = c.getString(c.getColumnIndex("sabado")).equals("true");
+
+            // Mapeia os nomes dos dias da semana às variáveis booleanas
+            Map<String, Boolean> diasSemana = new HashMap<>();
+            diasSemana.put("domingo", domingo);
+            diasSemana.put("segunda", segunda);
+            diasSemana.put("terca", terca);
+            diasSemana.put("quarta", quarta);
+            diasSemana.put("quinta", quinta);
+            diasSemana.put("sexta", sexta);
+            diasSemana.put("sabado", sabado);
+
+            // Crie uma lista para armazenar os nomes dos dias da semana que são verdadeiros
+            List<String> diasAtivos = new ArrayList<>();
+            for (Map.Entry<String, Boolean> entry : diasSemana.entrySet()) {
+                if (entry.getValue()) {
+                    diasAtivos.add(entry.getKey());
+                }
+            }
+
+            // Crie a instância da rota com base nos dados obtidos
+            rota = new Rotas(
+                    numeroRota,
+                    origemRota,
+                    destinoRota,
+                    tipoRota,
+                    valorRota,
+                    horarioRota,
+                    idMotorista,
+                    diasAtivos
+            );
+        }
+
+        c.close();
+        return rota;
+    }
+
+
+    public Motorista buscaMotoristaPorId(int idMotorista) {
+        SQLiteDatabase db = getReadableDatabase();
+
+        // Consulta SQL para buscar dados do motorista com base no id_motoristas
+        String sql = "SELECT m.*, p.pessoas_nome, p.pessoas_email, p.pessoas_telefone " +
+                "FROM motoristas m " +
+                "INNER JOIN pessoas p ON m.id_pessoas = p.pessoas_id " +
+                "WHERE m.motoristas_id = ?";
+
+        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(idMotorista)});
+
+        Motorista motorista = null;
+
+        if (cursor.moveToFirst()) {
+            // Recupere os dados do motorista da consulta
+            @SuppressLint("Range") String nome = cursor.getString(cursor.getColumnIndex("pessoas_nome"));
+            @SuppressLint("Range") String email = cursor.getString(cursor.getColumnIndex("pessoas_email"));
+            @SuppressLint("Range") String telefone = cursor.getString(cursor.getColumnIndex("pessoas_telefone"));
+            @SuppressLint("Range") String cnh = cursor.getString(cursor.getColumnIndex("motoristas_cnh"));
+            @SuppressLint("Range") String modeloCarro = cursor.getString(cursor.getColumnIndex("modelo_carro"));
+            @SuppressLint("Range") String placaVeiculo = cursor.getString(cursor.getColumnIndex("placa_veiculo"));
+
+            // Crie uma instância de Motorista com os dados obtidos
+            motorista = new Motorista(nome, null, email, null, telefone, null, cnh, modeloCarro, placaVeiculo);
+        }
+
+        cursor.close();
+        return motorista;
+    }
+
+
+
+
 }

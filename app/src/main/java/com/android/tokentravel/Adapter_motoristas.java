@@ -16,7 +16,6 @@ import com.android.tokentravel.objetos.Rotas;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,17 +23,18 @@ public class Adapter_motoristas extends RecyclerView.Adapter<Adapter_motoristas.
     private List<Rotas> mylist;
     private Context context;
     private Dao dao;
-    private List<Bitmap> motoristaImages;
-    private Bitmap selectedImage; // Variável para armazenar a imagem decodificada
+    private List<List<String>> motoristaNomes;
+    private List<List<byte[]>> motoristaImages;
 
     public Adapter_motoristas(Context context, List<Rotas> mylist) {
         this.context = context;
         this.mylist = mylist;
         dao = new Dao(context);
+        motoristaNomes = new ArrayList<>();
         motoristaImages = new ArrayList<>();
 
         for (Rotas rota : mylist) {
-            loadMotoristaImage(rota.getId_motorista());
+            loadMotoristaData(rota.getId_motorista()); // Carregue os dados do motorista
         }
     }
 
@@ -49,40 +49,53 @@ public class Adapter_motoristas extends RecyclerView.Adapter<Adapter_motoristas.
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Rotas rota = mylist.get(position);
 
-        String nomeDoMotorista = dao.buscaNomeMotoristaPorId(rota.getId_motorista());
+        List<String> nomesDoMotorista = motoristaNomes.get(position);
 
-        if (nomeDoMotorista != null) {
-            holder.textName.setText("Motorista: " + nomeDoMotorista);
+        if (!nomesDoMotorista.isEmpty()) {
+            holder.textName.setText("Motorista: " + nomesDoMotorista.get(0));
         } else {
             holder.textName.setText("Nome do Motorista: N/A");
         }
 
-        if (!motoristaImages.isEmpty()) {
-            Bitmap motoristaImage = motoristaImages.get(position);
-            holder.imageView.setImageBitmap(motoristaImage);
-            displaySelectedImage(motoristaImage, holder.imageView);
+        List<byte[]> imagensDoMotorista = motoristaImages.get(position);
 
-            // Armazene a imagem atual na variável selectedImage
-            selectedImage = motoristaImage;
+        if (!imagensDoMotorista.isEmpty()) {
+            Bitmap motoristaImage = BitmapFactory.decodeByteArray(imagensDoMotorista.get(0), 0, imagensDoMotorista.get(0).length);
+
+            if (motoristaImage != null) {
+                holder.imageView.setImageBitmap(motoristaImage);
+                displaySelectedImage(motoristaImage, holder.imageView);
+            }
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, Perfil_Apresent_RotaProf.class);
-                intent.putExtra("numeroRota", rota.getNumero_rota());
-                intent.putExtra("origem", rota.getOrigem());
-                intent.putExtra("destino", rota.getDestino());
+                int adapterPosition = holder.getAdapterPosition(); // Obtenha a posição do adaptador
 
-                // Passa a imagem decodificada como ByteArray
-                if (selectedImage != null) {
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    selectedImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                    byte[] byteArray = stream.toByteArray();
-                    intent.putExtra("motoristaImage", byteArray);
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    Rotas rota = mylist.get(adapterPosition); // Obtenha o item na posição do adaptador
+
+                    Intent intent = new Intent(context, Perfil_Apresent_RotaProf.class);
+                    intent.putExtra("numeroRota", rota.getNumero_rota());
+                    intent.putExtra("origem", rota.getOrigem());
+                    intent.putExtra("destino", rota.getDestino());
+
+                    // Passe o id_motorista diretamente
+                    intent.putExtra("id_motoristaagora", rota.getId_motorista());
+
+                    Log.d("Adapter_motoristas", "ID do motorista: " + rota.getId_motorista());
+                    Log.d("Adapter_motoristas", "ID da rota: " + rota.getNumero_rota());
+
+                    // Obtenha a imagem correta do motorista e passe como um ByteArray
+                    List<byte[]> imagensDoMotorista = motoristaImages.get(adapterPosition);
+                    if (!imagensDoMotorista.isEmpty()) {
+                        byte[] byteArray = imagensDoMotorista.get(0);
+                        intent.putExtra("motoristaImage", byteArray);
+                    }
+
+                    context.startActivity(intent);
                 }
-
-                context.startActivity(intent);
             }
         });
     }
@@ -103,24 +116,16 @@ public class Adapter_motoristas extends RecyclerView.Adapter<Adapter_motoristas.
         }
     }
 
-    private void loadMotoristaImage(int idMotorista) {
-        byte[] imageBytes = dao.obterFotoMotorista(idMotorista);
+    private void loadMotoristaData(int idMotorista) {
+        List<String> nomesMotoristas = dao.buscaNomesMotoristasPorId(idMotorista);
+        motoristaNomes.add(nomesMotoristas);
 
-        if (imageBytes != null && imageBytes.length > 0) {
-            Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-
-            if (bitmap != null) {
-                motoristaImages.add(bitmap);
-            } else {
-                Log.d("LoadMotoristaImage", "Falha na decodificação da imagem");
-            }
-        } else {
-            Log.d("LoadMotoristaImage", "Bytes da imagem não obtidos");
-        }
+        List<byte[]> fotosMotorista = dao.obterFotosMotorista(idMotorista);
+        motoristaImages.add(fotosMotorista);
     }
 
     private void displaySelectedImage(Bitmap bitmap, ImageView imageView) {
-        Glide.with(context)
+        Glide.with(imageView.getContext())
                 .load(bitmap)
                 .apply(RequestOptions.bitmapTransform(new CircleCrop()))
                 .into(imageView);

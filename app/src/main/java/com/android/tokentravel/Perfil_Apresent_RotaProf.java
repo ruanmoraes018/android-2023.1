@@ -3,15 +3,17 @@ package com.android.tokentravel;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.tokentravel.dao.Dao;
+import com.android.tokentravel.objetos.Motorista;
+import com.android.tokentravel.objetos.Rotas;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
@@ -40,50 +42,46 @@ public class Perfil_Apresent_RotaProf extends AppCompatActivity {
         tipoVeiculoTextView = findViewById(R.id.id_TipoVeiculo);
         valorTextView = findViewById(R.id.id_Valor);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        String emailDoMotoristaRota = sharedPreferences.getString("emailDoMotorista", "");
-        String tipoVeiculo = sharedPreferences.getString("tipoVeiculo", "");
-        String destinoRota = sharedPreferences.getString("destinoRota", "");
-        String nomeDoMotoristaRota = sharedPreferences.getString("nomeDoMotorista", "");
-        String horarioRota = sharedPreferences.getString("horarioRota", "");
-        String valorRota = sharedPreferences.getString("valorRota", "");
-
-        // Obtenha os extras da intent
+        // Obtenha o motoristaId e numeroRota da Intent
         Intent intent = getIntent();
         if (intent != null) {
-            String nomeMotorista = intent.getStringExtra("nomeMotorista");
-            String emailMotorista = intent.getStringExtra("emailMotorista");
-            String origem = intent.getStringExtra("origem");
-            String destino = intent.getStringExtra("destino");
-            String horario = intent.getStringExtra("horario");
-            String dias = intent.getStringExtra("dias");
-            String valor = intent.getStringExtra("valor");
+            int motoristaId = intent.getIntExtra("id_motoristaagora", -1);
+            int numeroRota = intent.getIntExtra("numeroRota", -1);
 
-            String diasDaSemanaString = sharedPreferences.getString("diasDaSemana", "");
-            // Divida a string nas vírgulas para obter a lista de dias da semana
-            List<String> diasDaSemana = Arrays.asList(diasDaSemanaString.split(","));
+            Log.d("Adapter_motoristas", "ID do motorista: " + motoristaId);
+            Log.d("Adapter_motoristas", "ID da rota: " + numeroRota);
 
-            // Obtenha a imagem passada através da Intent como um ByteArray
-            byte[] motoristaImageByteArray = intent.getByteArrayExtra("motoristaImage");
-            if (motoristaImageByteArray != null) {
-                Bitmap motoristaImage = BitmapFactory.decodeByteArray(motoristaImageByteArray, 0, motoristaImageByteArray.length);
-                // Aplicar a transformação de círculo à imagem usando Glide
-                Glide.with(this)
-                        .load(motoristaImage)
-                        .apply(RequestOptions.bitmapTransform(new CircleCrop()))
-                        .into(imageView);
+            if (motoristaId != -1 && numeroRota != -1) {
+                // Crie uma instância do seu Dao
+                Dao dao = new Dao(this);
+                Rotas rota = dao.buscaRotaPorId(motoristaId, numeroRota);
+
+                // Chame o método buscaMotoristaPorId para obter os dados do motorista
+                Motorista motorista = dao.buscaMotoristaPorId(motoristaId);
+
+                if (motorista != null) {
+                    // Defina os valores nos TextViews
+                    nomeTextView.setText(motorista.getPessoa_nome());
+                    emailTextView.setText(motorista.getPessoa_email());
+                    origemTextView.setText("Origem: " + rota.getOrigem());
+                    destinoTextView.setText("Destino: " + rota.getDestino());
+                    horarioTextView.setText("Horário: " + rota.getHorario());
+                    diasTextView.setText("Dia(s): " + TextUtils.join(", ", rota.getDiasAtivos()));
+                    tipoVeiculoTextView.setText("Tipo: " + rota.getTipo());
+                    valorTextView.setText("R$: " + rota.getValor());
+
+                    // Obtenha a imagem passada através da Intent como um ByteArray
+                    byte[] motoristaImageByteArray = intent.getByteArrayExtra("motoristaImage");
+                    if (motoristaImageByteArray != null) {
+                        Bitmap motoristaImage = BitmapFactory.decodeByteArray(motoristaImageByteArray, 0, motoristaImageByteArray.length);
+                        // Aplicar a transformação de círculo à imagem usando Glide
+                        Glide.with(this)
+                                .load(motoristaImage)
+                                .apply(RequestOptions.bitmapTransform(new CircleCrop()))
+                                .into(imageView);
+                    }
+                }
             }
-
-            // Defina os valores nos TextViews
-            nomeTextView.setText(nomeDoMotoristaRota);
-            emailTextView.setText(emailDoMotoristaRota);
-            origemTextView.setText("Origem: " + origem);
-            destinoTextView.setText("Destino: " + destino);
-            horarioTextView.setText("Horário: " + horarioRota);
-            diasTextView.setText("Dia(s): " + TextUtils.join(", ", diasDaSemana));
-            tipoVeiculoTextView.setText("Tipo: " + tipoVeiculo);
-            valorTextView.setText("R$: " + valorRota);
         }
     }
 }

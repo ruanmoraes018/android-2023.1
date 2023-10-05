@@ -173,7 +173,7 @@ public class MenuMotoraFragment extends Fragment {
                     try {
                         Bitmap originalBitmap = MediaStore.Images.Media.getBitmap(
                                 requireActivity().getContentResolver(), data.getData());
-                        Bitmap resizedBitmap = resizeBitmap(originalBitmap, 800, 800); // Defina o tamanho máximo desejado
+                        Bitmap resizedBitmap = resizeBitmap(originalBitmap, 600, 600); // Defina o tamanho máximo desejado
 
                         String imageString = convertBitmapToString(resizedBitmap);
 
@@ -195,7 +195,7 @@ public class MenuMotoraFragment extends Fragment {
 
     private String convertBitmapToString(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 70, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
