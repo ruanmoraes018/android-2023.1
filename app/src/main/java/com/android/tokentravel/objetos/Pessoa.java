@@ -1,5 +1,7 @@
 package com.android.tokentravel.objetos;
 
+import java.util.UUID;
+
 public class Pessoa {
     Integer pessoa_id;
     String pessoa_nome;
@@ -9,14 +11,18 @@ public class Pessoa {
     String pessoa_tipo;
     String pessoa_telefone;
     String foto;
+    UUID codigoUnico; // Adicione o campo UUID
 
-    public Pessoa(String pessoa_nome, String pessoa_cpf, String pessoa_email, String pessoa_senha, String pessoa_telefone , String pessoa_tipo) {
+    // Construtor para ambos, passageiros e motoristas
+    public Pessoa(String pessoa_nome, String pessoa_cpf, String pessoa_email, String pessoa_senha, String pessoa_telefone , String pessoa_tipo, String foto) {
         this.pessoa_nome = pessoa_nome;
         this.pessoa_cpf = pessoa_cpf;
         this.pessoa_email = pessoa_email;
         this.pessoa_senha = pessoa_senha;
         this.pessoa_telefone = pessoa_telefone;
         this.pessoa_tipo = pessoa_tipo;
+        this.foto = foto;
+        this.codigoUnico = UUID.randomUUID(); // Gere um UUID único ao criar uma instância de Pessoa
     }
 
     public Integer getPessoa_id() {
@@ -73,5 +79,13 @@ public class Pessoa {
 
     public void setFoto(String foto) {
         this.foto = foto;
+    }
+
+    public UUID getCodigoUnico() {
+        return codigoUnico;
+    }
+
+    public void setCodigoUnico(UUID codigoUnico) {
+        this.codigoUnico = codigoUnico;
     }
 }

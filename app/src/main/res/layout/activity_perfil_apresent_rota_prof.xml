@@ -203,6 +203,7 @@
         app:srcCompat="@drawable/ic_phone_motora" />
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/retornar_inicio"
         style="@style/Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

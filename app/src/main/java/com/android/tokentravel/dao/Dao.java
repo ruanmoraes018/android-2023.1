@@ -34,23 +34,29 @@ public class Dao extends SQLiteOpenHelper {
                 "pessoas_senha TEXT NOT NULL, " +
                 "pessoas_telefone TEXT NOT NULL, " +
                 "foto TEXT, " +
-                "pessoas_tipo TEXT);";
+                "pessoas_tipo TEXT, " +
+                "codigo_unico TEXT UNIQUE);"; // Adicione a coluna para o código único
         db.execSQL(sql_pessoas);
 
         String sql_passageiros = "CREATE TABLE passageiros (passageiros_id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_pessoas INTEGER, " +
-                "FOREIGN KEY (id_pessoas) REFERENCES pessoas(pessoas_id));";
+                "id_pessoas INTEGER, " + // Coluna para o id da pessoa
+                "codigo_passageiro TEXT UNIQUE, " + // Coluna para o código único do passageiro
+                "FOREIGN KEY (id_pessoas) REFERENCES pessoas(pessoas_id), " +
+                "FOREIGN KEY (codigo_passageiro) REFERENCES pessoas(codigo_unico));";
         db.execSQL(sql_passageiros);
 
+
         String sql_motoristas = "CREATE TABLE motoristas (motoristas_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "id_pessoas INTEGER, " +
+                "codigo_motorista TEXT UNIQUE, " + // Use um campo de texto para o código único
+                "id_pessoas INTEGER, " + // Coluna para o id da pessoa
                 "motoristas_cnh TEXT NOT NULL, " +
                 "modelo_carro TEXT NOT NULL, " +
                 "placa_veiculo TEXT NOT NULL, " +
-                "FOREIGN KEY (id_pessoas) REFERENCES pessoas(pessoas_id));";
+                "FOREIGN KEY (id_pessoas) REFERENCES pessoas(pessoas_id), " +
+                "FOREIGN KEY (codigo_motorista) REFERENCES pessoas(codigo_unico));"; // Referencie a coluna de código único
         db.execSQL(sql_motoristas);
 
-        String sql_dias_semanas = "CREATE TABLE dias_semanas (dias_semana_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+    String sql_dias_semanas = "CREATE TABLE dias_semanas (dias_semana_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "domingo TEXT, " +
                 "segunda TEXT, " +
                 "terca TEXT, " +
@@ -60,6 +66,19 @@ public class Dao extends SQLiteOpenHelper {
                 "sabado TEXT);";
         db.execSQL(sql_dias_semanas);
 
+//        String sql_rotas = "CREATE TABLE rotas (criar_rotas_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+//                "origem_rota TEXT, " +
+//                "numeroRota INT UNIQUE, " +
+//                "destino_rota TEXT, " +
+//                "tipo_veiculo TEXT, " +
+//                "valor_rota REAL, " +
+//                "horario_rota TEXT, " +
+//                "id_motoristas INTEGER, " +
+//                "id_dias_semanas INTEGER, " +  // Adicione esta coluna
+//                "FOREIGN KEY (id_motoristas) REFERENCES motoristas(motoristas_id), " +
+//                "FOREIGN KEY (id_dias_semanas) REFERENCES dias_semanas(dias_semana_id));";
+//        db.execSQL(sql_rotas);
+
         String sql_rotas = "CREATE TABLE rotas (criar_rotas_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "origem_rota TEXT, " +
                 "numeroRota INT UNIQUE, " +
@@ -67,11 +86,14 @@ public class Dao extends SQLiteOpenHelper {
                 "tipo_veiculo TEXT, " +
                 "valor_rota REAL, " +
                 "horario_rota TEXT, " +
-                "id_motoristas INTEGER, " +
-                "id_dias_semanas INTEGER, " +  // Adicione esta coluna
-                "FOREIGN KEY (id_motoristas) REFERENCES motoristas(motoristas_id), " +
+                "id_motoristas INTEGER, " + // Mantenha a chave estrangeira com id_motoristas
+                "codigo_motorista TEXT, " + // Adicione a coluna para o código do motorista
+                "id_dias_semanas INTEGER, " +
+                "FOREIGN KEY (id_motoristas) REFERENCES motoristas(motoristas_id), " + // Referencie a coluna id_motoristas
+                "FOREIGN KEY (codigo_motorista) REFERENCES motoristas(codigo_motorista), " + // Referencie a coluna código_motorista
                 "FOREIGN KEY (id_dias_semanas) REFERENCES dias_semanas(dias_semana_id));";
         db.execSQL(sql_rotas);
+
 
         String sql_favoritos = "CREATE TABLE favoritos (favoritos_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "id_passageiros INTEGER, " +
@@ -99,52 +121,69 @@ public class Dao extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public String inserirPassageiro(Passageiro passageiro){
+    public String inserirPassageiro(Passageiro passageiro) {
         SQLiteDatabase db = getWritableDatabase();
         try {
-            ContentValues dados_pessoas = new ContentValues();
-            dados_pessoas.put("pessoas_nome", passageiro.getPessoa_nome());
-            dados_pessoas.put("pessoas_cpf", passageiro.getPessoa_cpf());
-            dados_pessoas.put("pessoas_email", passageiro.getPessoa_email());
-            dados_pessoas.put("pessoas_senha", passageiro.getPessoa_senha());
-            dados_pessoas.put("pessoas_tipo", passageiro.getPessoa_tipo());
-            dados_pessoas.put("pessoas_telefone", passageiro.getPessoa_telefone());
-            long idPessoa = db.insert("pessoas", null, dados_pessoas);
+            ContentValues dadosPessoa = new ContentValues();
+            dadosPessoa.put("pessoas_nome", passageiro.getPessoa_nome());
+            dadosPessoa.put("pessoas_cpf", passageiro.getPessoa_cpf());
+            dadosPessoa.put("pessoas_email", passageiro.getPessoa_email());
+            dadosPessoa.put("pessoas_senha", passageiro.getPessoa_senha());
+            dadosPessoa.put("pessoas_tipo", passageiro.getPessoa_tipo());
+            dadosPessoa.put("pessoas_telefone", passageiro.getPessoa_telefone());
+            dadosPessoa.put("codigo_unico", passageiro.getCodigoUnico().toString()); // Insira o código único
 
-            ContentValues dados_passageiro = new ContentValues();
-            dados_passageiro.put("id_pessoas", idPessoa);
-            db.insert("passageiros", null, dados_passageiro);
-            db.close();
+            // Insira a pessoa com o código único
+            long idPessoa = db.insert("pessoas", null, dadosPessoa);
 
-            return "Passageiro cadastrado com sucesso!";
+            if (idPessoa != -1) { // Verifique se a inserção foi bem-sucedida
+                ContentValues dadosPassageiro = new ContentValues();
+                dadosPassageiro.put("id_pessoas", idPessoa);
+                dadosPassageiro.put("codigo_passageiro", passageiro.getCodigoUnico().toString()); // Use o código único
+                db.insert("passageiros", null, dadosPassageiro);
+                db.close();
+                return "Passageiro cadastrado com sucesso!";
+            } else {
+                db.close();
+                return "Erro ao cadastrar passageiro!";
+            }
         } catch (SQLiteException e) {
             Log.e("DAO", e.getMessage());
             return "Erro ao cadastrar passageiro!";
         }
     }
+
+
     public String inserirMotorista(Motorista motorista){
         SQLiteDatabase db = getWritableDatabase();
         try {
-            ContentValues dados_pessoas = new ContentValues();
-            dados_pessoas.put("pessoas_nome", motorista.getPessoa_nome());
-            dados_pessoas.put("pessoas_cpf", motorista.getPessoa_cpf());
-            dados_pessoas.put("pessoas_email", motorista.getPessoa_email());
-            dados_pessoas.put("pessoas_senha", motorista.getPessoa_senha());
-            dados_pessoas.put("pessoas_tipo", motorista.getPessoa_tipo());
-            dados_pessoas.put("pessoas_telefone", motorista.getPessoa_telefone());
+            ContentValues dadosPessoas = new ContentValues();
+            dadosPessoas.put("pessoas_nome", motorista.getPessoa_nome());
+            dadosPessoas.put("pessoas_cpf", motorista.getPessoa_cpf());
+            dadosPessoas.put("pessoas_email", motorista.getPessoa_email());
+            dadosPessoas.put("pessoas_senha", motorista.getPessoa_senha());
+            dadosPessoas.put("pessoas_tipo", motorista.getPessoa_tipo());
+            dadosPessoas.put("pessoas_telefone", motorista.getPessoa_telefone());
+            dadosPessoas.put("codigo_unico", motorista.getCodigoUnico().toString()); // Insira o código único
 
-            long idPessoa = db.insert("pessoas", null, dados_pessoas);
+            // Insira a pessoa com o código único
+            long idPessoa = db.insert("pessoas", null, dadosPessoas);
 
-            ContentValues dados_motorista = new ContentValues();
-            dados_motorista.put("id_pessoas", idPessoa);
-            dados_motorista.put("motoristas_cnh", motorista.getCnh());
-            dados_motorista.put("modelo_carro", motorista.getModelo_carro());
-            dados_motorista.put("placa_veiculo", motorista.getPlaca_veiculo());
+            if (idPessoa != -1) { // Verifique se a inserção foi bem-sucedida
+                ContentValues dadosMotorista = new ContentValues();
+                dadosMotorista.put("id_pessoas", idPessoa);
+                dadosMotorista.put("motoristas_cnh", motorista.getCnh());
+                dadosMotorista.put("modelo_carro", motorista.getModelo_carro());
+                dadosMotorista.put("placa_veiculo", motorista.getPlaca_veiculo());
+                dadosMotorista.put("codigo_motorista", motorista.getCodigoUnico().toString()); // Use o código único
 
-            db.insert("motoristas", null, dados_motorista);
-            db.close();
-
-            return "Motorista cadastrado com sucesso!";
+                db.insert("motoristas", null, dadosMotorista);
+                db.close();
+                return "Motorista cadastrado com sucesso!";
+            } else {
+                db.close();
+                return "Erro ao cadastrar motorista!";
+            }
         } catch (SQLiteException e) {
             Log.e("DAO", e.getMessage());
             return "Erro ao cadastrar motorista!";
@@ -171,7 +210,7 @@ public class Dao extends SQLiteOpenHelper {
             String nomeDoPassageiro = c.getString(0);
             String emailDoPassageiro = c.getString(1);
             c.close();
-            return new Pessoa(nomeDoPassageiro, null, emailDoPassageiro, null, null, null);
+            return new Pessoa(nomeDoPassageiro, null, emailDoPassageiro, null, null, null, null);
         }
         c.close();
         return null;
@@ -200,7 +239,7 @@ public class Dao extends SQLiteOpenHelper {
             String nomeDoMotorista = c.getString(0);
             String emailDoMotorista = c.getString(1);
             c.close();
-            return new Pessoa(nomeDoMotorista, null, emailDoMotorista, null, null, null);
+            return new Pessoa(nomeDoMotorista, null, emailDoMotorista, null, null, null, null);
         }
         c.close();
         return null;
@@ -297,7 +336,7 @@ public class Dao extends SQLiteOpenHelper {
             String nomeDoMotorista = c.getString(0);
             String emailDoMotorista = c.getString(1);
             c.close();
-            return new Motorista(nomeDoMotorista, null, emailDoMotorista, null, null, null, null, null, null);
+            return new Motorista(nomeDoMotorista, null, emailDoMotorista, null, null, null, null, null, null, null);
         }
         c.close();
         return null;
@@ -340,6 +379,7 @@ public class Dao extends SQLiteOpenHelper {
             rotas.put("valor_rota", rota.getValor());
             rotas.put("horario_rota", rota.getHorario());
             rotas.put("id_motoristas", rota.getId_motorista());
+            rotas.put("codigo_motorista", rota.getCodigo_motorista()); // Use o código do motorista recebido como parâmetro
             rotas.put("id_dias_semanas", diasSemanasId);
 
             long rotaId = db.insert("rotas", null, rotas);
@@ -370,6 +410,8 @@ public class Dao extends SQLiteOpenHelper {
             @SuppressLint("Range") float valorRota = c.getFloat(c.getColumnIndex("valor_rota"));
             @SuppressLint("Range") String horarioRota = c.getString(c.getColumnIndex("horario_rota"));
             @SuppressLint("Range") int idMotorista = c.getInt(c.getColumnIndex("id_motoristas"));
+            @SuppressLint("Range") String codigo_motorista = c.getString(c.getColumnIndex("codigo_motorista"));
+
 
             @SuppressLint("Range")
             boolean domingo = c.getString(c.getColumnIndex("domingo")).equals("true");
@@ -415,6 +457,7 @@ public class Dao extends SQLiteOpenHelper {
                     valorRota,
                     horarioRota,
                     idMotorista,
+                    codigo_motorista,
                     diasAtivos // Aqui, passamos a lista de nomes dos dias ativos
             );
 
@@ -441,6 +484,23 @@ public class Dao extends SQLiteOpenHelper {
         c.close();
         return -1; // Retorna -1 se não encontrar o motorista
     }
+
+    public String buscaCodigoMotoristaPorEmail(String email) {
+        SQLiteDatabase db = getReadableDatabase();
+        String sql_busca_codigo_motorista = "SELECT codigo_motorista FROM motoristas " +
+                "INNER JOIN pessoas ON motoristas.id_pessoas = pessoas.pessoas_id " +
+                "WHERE pessoas_email = ?;";
+        Cursor c = db.rawQuery(sql_busca_codigo_motorista, new String[]{email});
+
+        if (c.moveToFirst()) {
+            String codigoMotorista = c.getString(0);
+            c.close();
+            return codigoMotorista;
+        }
+        c.close();
+        return null; // Retorna null se não encontrar o código do motorista
+    }
+
 
     public int buscaIdPassageiro(String email) {
         SQLiteDatabase db = getReadableDatabase();
@@ -577,14 +637,14 @@ public class Dao extends SQLiteOpenHelper {
             db.close();
         }
     }
-    public ArrayList<Rotas> buscaRotasDisponiveis(String origem, String destino) {
+    public ArrayList<Rotas> buscaRotasDisponiveis(String origem, String destino, String diaSemana) {
         ArrayList<Rotas> rotasList = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
 
-        // Consulta SQL para buscar rotas com base na origem e destino
+        // Consulta SQL para buscar rotas com base na origem, destino e dia da semana
         String sql_busca_rotas = "SELECT r.*, ds.* FROM rotas r " +
                 "INNER JOIN dias_semanas ds ON r.id_dias_semanas = ds.dias_semana_id " +
-                "WHERE r.origem_rota = ? AND r.destino_rota = ?";
+                "WHERE r.origem_rota = ? AND r.destino_rota = ? AND ds." + diaSemana + " = 'true'";
 
         Cursor c = db.rawQuery(sql_busca_rotas, new String[]{origem, destino});
 
@@ -596,6 +656,8 @@ public class Dao extends SQLiteOpenHelper {
             @SuppressLint("Range") float valorRota = c.getFloat(c.getColumnIndex("valor_rota"));
             @SuppressLint("Range") String horarioRota = c.getString(c.getColumnIndex("horario_rota"));
             @SuppressLint("Range") int idMotorista = c.getInt(c.getColumnIndex("id_motoristas"));
+            @SuppressLint("Range") String codigo_motorista = c.getString(c.getColumnIndex("codigo_motorista"));
+
 
             @SuppressLint("Range")
             boolean domingo = c.getString(c.getColumnIndex("domingo")).equals("true");
@@ -645,6 +707,7 @@ public class Dao extends SQLiteOpenHelper {
                     valorRota,
                     horarioRota,
                     idMotorista,
+                    codigo_motorista,
                     diasAtivos // Aqui, passamos a lista de nomes dos dias ativos
             );
 
@@ -655,64 +718,65 @@ public class Dao extends SQLiteOpenHelper {
         return rotasList;
     }
 
-    @SuppressLint("LongLogTag")
-    public List<String> buscaNomesMotoristasPorId(int idMotorista) {
-        SQLiteDatabase db = getReadableDatabase();
-        String sql = "SELECT pessoas.pessoas_nome FROM motoristas " +
-                "INNER JOIN pessoas ON motoristas.id_pessoas = pessoas.pessoas_id " +
-                "WHERE motoristas.motoristas_id = ? ;";
 
-        Cursor c = db.rawQuery(sql, new String[]{String.valueOf(idMotorista)});
-        List<String> nomesMotoristas = new ArrayList<>();
-
-        if (c.moveToFirst()) {
-            do {
-                String nomeDoMotorista = c.getString(0);
-                nomesMotoristas.add(nomeDoMotorista);
-
-                // Adicione logs para verificar os nomes dos motoristas
-                Log.d("buscaNomesMotoristasPorId", "Nome do Motorista: " + nomeDoMotorista);
-            } while (c.moveToNext());
-        }
-
-        c.close();
-        return nomesMotoristas;
-    }
-
-    @SuppressLint("Range")
-    public List<byte[]> obterFotosMotorista(int idMotorista) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT pessoas.foto FROM motoristas " +
-                "INNER JOIN pessoas ON motoristas.id_pessoas = pessoas.pessoas_id " +
-                "WHERE motoristas.motoristas_id = ? ;";
-
-        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(idMotorista)});
-
-        List<byte[]> fotosMotorista = new ArrayList<>();
-
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                String imageString = cursor.getString(cursor.getColumnIndex("foto"));
-
-                // Verifique se a string de imagem não está vazia
-                if (imageString != null && !imageString.isEmpty()) {
-                    // Decodificar a string Base64 em um array de bytes
-                    byte[] imageBytes = Base64.decode(imageString, Base64.DEFAULT);
-                    fotosMotorista.add(imageBytes);
-
-                    // Adicione um log para verificar quando uma foto é obtida
-                    Log.d("obterFotosMotorista", "Foto do Motorista obtida");
-                } else {
-                    // Adicione um log para identificar quando a string de imagem está vazia
-                    Log.d("obterFotosMotorista", "String de imagem vazia ou nula");
-                }
-            } while (cursor.moveToNext());
-
-            cursor.close();
-        }
-
-        return fotosMotorista;
-    }
+//    @SuppressLint("LongLogTag")
+//    public List<String> buscaNomesMotoristasPorId(int idMotorista) {
+//        SQLiteDatabase db = getReadableDatabase();
+//        String sql = "SELECT pessoas.pessoas_nome FROM motoristas " +
+//                "INNER JOIN pessoas ON motoristas.id_pessoas = pessoas.pessoas_id " +
+//                "WHERE motoristas.motoristas_id = ? ;";
+//
+//        Cursor c = db.rawQuery(sql, new String[]{String.valueOf(idMotorista)});
+//        List<String> nomesMotoristas = new ArrayList<>();
+//
+//        if (c.moveToFirst()) {
+//            do {
+//                String nomeDoMotorista = c.getString(0);
+//                nomesMotoristas.add(nomeDoMotorista);
+//
+//                // Adicione logs para verificar os nomes dos motoristas
+//                Log.d("buscaNomesMotoristasPorId", "Nome do Motorista: " + nomeDoMotorista);
+//            } while (c.moveToNext());
+//        }
+//
+//        c.close();
+//        return nomesMotoristas;
+//    }
+//
+//    @SuppressLint("Range")
+//    public List<byte[]> obterFotosMotorista(int idMotorista) {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        String query = "SELECT pessoas.foto FROM motoristas " +
+//                "INNER JOIN pessoas ON motoristas.id_pessoas = pessoas.pessoas_id " +
+//                "WHERE motoristas.motoristas_id = ? ;";
+//
+//        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(idMotorista)});
+//
+//        List<byte[]> fotosMotorista = new ArrayList<>();
+//
+//        if (cursor != null && cursor.moveToFirst()) {
+//            do {
+//                String imageString = cursor.getString(cursor.getColumnIndex("foto"));
+//
+//                // Verifique se a string de imagem não está vazia
+//                if (imageString != null && !imageString.isEmpty()) {
+//                    // Decodificar a string Base64 em um array de bytes
+//                    byte[] imageBytes = Base64.decode(imageString, Base64.DEFAULT);
+//                    fotosMotorista.add(imageBytes);
+//
+//                    // Adicione um log para verificar quando uma foto é obtida
+//                    Log.d("obterFotosMotorista", "Foto do Motorista obtida");
+//                } else {
+//                    // Adicione um log para identificar quando a string de imagem está vazia
+//                    Log.d("obterFotosMotorista", "String de imagem vazia ou nula");
+//                }
+//            } while (cursor.moveToNext());
+//
+//            cursor.close();
+//        }
+//
+//        return fotosMotorista;
+//    }
 
 
 
@@ -762,13 +826,30 @@ public class Dao extends SQLiteOpenHelper {
         return imageString;
     }
 
-    public Rotas buscaRotaPorId(int motoristaId, int numeroRota) {
+    public int buscarIdRotaPorNumeroRotaEIdMotorista(int numeroRota, int idMotorista) {
+        SQLiteDatabase db = getReadableDatabase();
+        String sql_busca_id_rota = "SELECT criar_rotas_id FROM rotas WHERE numeroRota = ? AND id_motoristas = ?";
+        Cursor c = db.rawQuery(sql_busca_id_rota, new String[]{String.valueOf(numeroRota), String.valueOf(idMotorista)});
+
+        if (c.moveToFirst()) {
+            int idRota = c.getInt(0);
+            c.close();
+            Log.d("Dao", "ID da rota encontrada: " + idRota);
+            return idRota;
+        } else {
+            c.close();
+            Log.d("Dao", "Rota não encontrada para o número de rota: " + numeroRota);
+            return -1; // Retorna -1 para indicar que a rota não foi encontrada
+        }
+    }
+
+    public Rotas buscaRotaPorId(int motoristaId, int numeroRota, int idRota) {
         SQLiteDatabase db = getReadableDatabase();
         String sql_busca_motorista = "SELECT r.*, ds.* FROM rotas r " +
                 "INNER JOIN dias_semanas ds ON r.id_dias_semanas = ds.dias_semana_id " +
-                "WHERE r.id_motoristas = ? AND r.numeroRota = ?";
+                "WHERE r.id_motoristas = ? AND r.numeroRota = ? AND r.criar_rotas_id = ?";
 
-        Cursor c = db.rawQuery(sql_busca_motorista, new String[]{String.valueOf(motoristaId), String.valueOf(numeroRota)});
+        Cursor c = db.rawQuery(sql_busca_motorista, new String[]{String.valueOf(motoristaId), String.valueOf(numeroRota), String.valueOf(idRota)});
 
         Rotas rota = null;
 
@@ -779,6 +860,8 @@ public class Dao extends SQLiteOpenHelper {
             @SuppressLint("Range") float valorRota = c.getFloat(c.getColumnIndex("valor_rota"));
             @SuppressLint("Range") String horarioRota = c.getString(c.getColumnIndex("horario_rota"));
             @SuppressLint("Range") int idMotorista = c.getInt(c.getColumnIndex("id_motoristas"));
+            @SuppressLint("Range") String codigo_motorista = c.getString(c.getColumnIndex("codigo_motorista"));
+
 
             @SuppressLint("Range")
             boolean domingo = c.getString(c.getColumnIndex("domingo")).equals("true");
@@ -822,8 +905,15 @@ public class Dao extends SQLiteOpenHelper {
                     valorRota,
                     horarioRota,
                     idMotorista,
+                    codigo_motorista,
                     diasAtivos
             );
+            // Adicione mensagens de log para verificar os dados obtidos
+            Log.d("Dao", "Rota encontrada: " + rota.toString());
+        } else {
+            c.close();
+            Log.d("Dao", "Rota não encontrada para o número de rota: " + numeroRota);
+            return null; // Retornar null para indicar que a rota não foi encontrada
         }
 
         c.close();
@@ -831,36 +921,77 @@ public class Dao extends SQLiteOpenHelper {
     }
 
 
-    public Motorista buscaMotoristaPorId(int idMotorista) {
+    @SuppressLint("LongLogTag")
+    public Motorista buscaMotoristaPorCodigoUnico(String codigoUnicoMotorista) {
         SQLiteDatabase db = getReadableDatabase();
 
-        // Consulta SQL para buscar dados do motorista com base no id_motoristas
+        // Consulta SQL para buscar dados do motorista com base no código único do motorista
         String sql = "SELECT m.*, p.pessoas_nome, p.pessoas_email, p.pessoas_telefone " +
                 "FROM motoristas m " +
                 "INNER JOIN pessoas p ON m.id_pessoas = p.pessoas_id " +
-                "WHERE m.motoristas_id = ?";
+                "WHERE m.codigo_motorista = ?";
 
-        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(idMotorista)});
-
+        Cursor cursor = null;
         Motorista motorista = null;
 
-        if (cursor.moveToFirst()) {
-            // Recupere os dados do motorista da consulta
-            @SuppressLint("Range") String nome = cursor.getString(cursor.getColumnIndex("pessoas_nome"));
-            @SuppressLint("Range") String email = cursor.getString(cursor.getColumnIndex("pessoas_email"));
-            @SuppressLint("Range") String telefone = cursor.getString(cursor.getColumnIndex("pessoas_telefone"));
-            @SuppressLint("Range") String cnh = cursor.getString(cursor.getColumnIndex("motoristas_cnh"));
-            @SuppressLint("Range") String modeloCarro = cursor.getString(cursor.getColumnIndex("modelo_carro"));
-            @SuppressLint("Range") String placaVeiculo = cursor.getString(cursor.getColumnIndex("placa_veiculo"));
+        try {
+            cursor = db.rawQuery(sql, new String[]{codigoUnicoMotorista});
 
-            // Crie uma instância de Motorista com os dados obtidos
-            motorista = new Motorista(nome, null, email, null, telefone, null, cnh, modeloCarro, placaVeiculo);
+            if (cursor.moveToFirst()) {
+                // Defina constantes para os nomes das colunas
+                final String COL_NOME = "pessoas_nome";
+                final String COL_EMAIL = "pessoas_email";
+                final String COL_TELEFONE = "pessoas_telefone";
+                final String COL_CNH = "motoristas_cnh";
+                final String COL_MODELO_CARRO = "modelo_carro";
+                final String COL_PLACA_VEICULO = "placa_veiculo";
+
+                // Recupere os dados do motorista da consulta
+                @SuppressLint("Range") String nome = cursor.getString(cursor.getColumnIndex(COL_NOME));
+                @SuppressLint("Range") String email = cursor.getString(cursor.getColumnIndex(COL_EMAIL));
+                @SuppressLint("Range") String telefone = cursor.getString(cursor.getColumnIndex(COL_TELEFONE));
+                @SuppressLint("Range") String cnh = cursor.getString(cursor.getColumnIndex(COL_CNH));
+                @SuppressLint("Range") String modeloCarro = cursor.getString(cursor.getColumnIndex(COL_MODELO_CARRO));
+                @SuppressLint("Range") String placaVeiculo = cursor.getString(cursor.getColumnIndex(COL_PLACA_VEICULO));
+
+                // Crie uma instância de Motorista com os dados obtidos
+                motorista = new Motorista(nome, null, email, null, telefone, null, cnh, modeloCarro, placaVeiculo, null);
+
+                // Adicione mensagens de log para verificar os dados obtidos
+                Log.d("buscaMotoristaPorCodigoUnico", "Motorista encontrado: " + motorista.toString());
+            } else {
+                Log.d("buscaMotoristaPorCodigoUnico", "Nenhum motorista encontrado com o código único: " + codigoUnicoMotorista);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("buscaMotoristaPorCodigoUnico", "Erro ao buscar motorista por código único: " + e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
 
-        cursor.close();
         return motorista;
     }
 
+
+
+    @SuppressLint("Range")
+    public String obterFotoPorCodigoMotorista(String codigoMotorista) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT foto FROM pessoas WHERE codigo_unico = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{codigoMotorista});
+
+        String imageString = null;
+
+        if (cursor != null && cursor.moveToFirst()) {
+            imageString = cursor.getString(cursor.getColumnIndex("foto"));
+            cursor.close();
+            Log.d("ObterFotoMotorista", "Foto do motorista obtida com sucesso: " + imageString);
+        }
+
+        return imageString;
+    }
 
 
 

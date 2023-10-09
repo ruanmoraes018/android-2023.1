@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -39,6 +40,7 @@ import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.PlaceAutocomplete;
 import com.mapbox.mapboxsdk.plugins.places.autocomplete.model.PlaceOptions;
 
+import java.text.Normalizer;
 
 public class PesquisaRota extends AppCompatActivity {
 
@@ -65,7 +67,6 @@ public class PesquisaRota extends AppCompatActivity {
 
         // Inicializar os elementos de UI
 
-
         // Configurar o clique do botão
         imagemautocompleteorigem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,7 +83,6 @@ public class PesquisaRota extends AppCompatActivity {
                 openPlaceAutocompleteDestino(REQUEST_CODE_ORIGEM);
             }
         });
-
 
         Spinner spinnerUserType = findViewById(R.id.spinner_user_type);
 
@@ -176,7 +176,6 @@ public class PesquisaRota extends AppCompatActivity {
         startActivityForResult(intent, requestCode);
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -210,11 +209,11 @@ public class PesquisaRota extends AppCompatActivity {
         String enderecoOrigem = autoCompleteOrigem.getText().toString();
         String enderecoDestino = autoCompleteDestino.getText().toString();
 
-        if(TextUtils.isEmpty(enderecoOrigem)){
-            Toast.makeText(this, "A origem é obrigatório.", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(enderecoOrigem)) {
+            Toast.makeText(this, "A origem é obrigatória.", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(TextUtils.isEmpty(enderecoDestino)){
+        if (TextUtils.isEmpty(enderecoDestino)) {
             Toast.makeText(this, "O destino é obrigatório.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -222,7 +221,7 @@ public class PesquisaRota extends AppCompatActivity {
         MapboxGeocoding geocodingServiceOrigem = MapboxGeocoding.builder()
                 .accessToken(getResources().getString(R.string.mapbox_access_token))
                 .query(enderecoOrigem)
-                .geocodingTypes(GeocodingCriteria.TYPE_PLACE)
+                .geocodingTypes(GeocodingCriteria.TYPE_PLACE, GeocodingCriteria.TYPE_POI)
                 .build();
 
         geocodingServiceOrigem.enqueueCall(new Callback<GeocodingResponse>() {
@@ -237,7 +236,7 @@ public class PesquisaRota extends AppCompatActivity {
                     MapboxGeocoding geocodingServiceDestino = MapboxGeocoding.builder()
                             .accessToken(getResources().getString(R.string.mapbox_access_token))
                             .query(enderecoDestino)
-                            .geocodingTypes(GeocodingCriteria.TYPE_PLACE)
+                            .geocodingTypes(GeocodingCriteria.TYPE_PLACE, GeocodingCriteria.TYPE_POI)
                             .build();
 
                     geocodingServiceDestino.enqueueCall(new Callback<GeocodingResponse>() {
@@ -256,14 +255,17 @@ public class PesquisaRota extends AppCompatActivity {
                                 intent.putExtra("longitudeDestino", longitudeDestino);
                                 startActivity(intent);
                                 Spinner spinnerUserType = findViewById(R.id.spinner_user_type);
-                                String dia = spinnerUserType.getSelectedItem().toString();
+                                String dia = spinnerUserType.getSelectedItem().toString().toLowerCase(); // Converter para minúsculas
 
                                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 editor.putString("nomeOrigem", enderecoOrigem);
                                 editor.putString("nomeDestino", enderecoDestino);
-                                editor.putString("diaSemana", dia);
+                                editor.putString("diaSemana", removeAcentosEMinusculas(dia)); // Aplicar a função
                                 editor.apply();
+                                Log.d("SharedPreferences", "nomeOrigem: " + enderecoOrigem);
+                                Log.d("SharedPreferences", "nomeDestino: " + enderecoDestino);
+                                Log.d("SharedPreferences", "diaSemana: " + removeAcentosEMinusculas(dia)); // Aplicar a função
                             }
                         }
 
@@ -307,5 +309,10 @@ public class PesquisaRota extends AppCompatActivity {
             }
         }
         return "";
+    }
+
+    private String removeAcentosEMinusculas(String input) {
+        String semAcentos = Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+        return semAcentos.toLowerCase();
     }
 }

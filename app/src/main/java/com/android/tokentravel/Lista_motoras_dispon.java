@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.tokentravel.dao.Dao;
 import com.android.tokentravel.objetos.Rotas;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Lista_motoras_dispon extends AppCompatActivity {
@@ -29,6 +29,8 @@ public class Lista_motoras_dispon extends AppCompatActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String origem = sharedPreferences.getString("nomeOrigem", "");
         String destino = sharedPreferences.getString("nomeDestino", "");
+        String diaSemana = sharedPreferences.getString("diaSemana", "");
+
 
         TextView origemTextView = findViewById(R.id.origemfinal);
         TextView destinoTextView = findViewById(R.id.destinofinal);
@@ -45,16 +47,16 @@ public class Lista_motoras_dispon extends AppCompatActivity {
         dao = new Dao(this);
 
         // Chame o método para buscar as rotas disponíveis com base na origem e destino
-        List<Rotas> rotasDisponiveis = buscaRotasDisponiveis(origem, destino);
+        List<Rotas> rotasDisponiveis = buscaRotasDisponiveis(origem, destino, diaSemana);
 
         // Passe o contexto e a lista de rotas para o Adapter_motoristas
-        adapter = new Adapter_motoristas(this, rotasDisponiveis);
+        adapter = new Adapter_motoristas(this, (ArrayList<Rotas>) rotasDisponiveis);
 
         recyclerView.setAdapter(adapter);
     }
 
-    private List<Rotas> buscaRotasDisponiveis(String origem, String destino) {
+    private List<Rotas> buscaRotasDisponiveis(String origem, String destino, String diaSemana) {
         // Chame o método do DAO para buscar as rotas disponíveis com base na origem e destino
-        return dao.buscaRotasDisponiveis(origem, destino);
+        return dao.buscaRotasDisponiveis(origem, destino, diaSemana);
     }
 }

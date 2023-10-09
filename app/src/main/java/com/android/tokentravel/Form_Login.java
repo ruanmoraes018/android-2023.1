@@ -113,6 +113,7 @@ public class Form_Login extends AppCompatActivity {
                                 }
                                 // Salvar informações do usuário nas preferências compartilhadas
                                 int idDoMotorista = dao.buscaIdMotorista(email);
+                                String codigoMotorista = dao.buscaCodigoMotoristaPorEmail(email);
                                 int idDoPassageiro = dao.buscaIdPassageiro(email);
                                 String nomeUsuario = dao.buscaInfoUsuario(email).getPessoa_nome();
                                 String tipoDaPessoaAutenticada = tipoUsuario;
@@ -127,6 +128,10 @@ public class Form_Login extends AppCompatActivity {
                                 editor.putString("tipoDaPessoaLogada", tipoDaPessoaAutenticada);
                                 editor.putString("emailDoUsuarioLogado", emailDoUsuarioAutenticado);
                                 editor.putString("authToken", authToken);
+
+// Adicione o código do motorista às preferências compartilhadas
+                                editor.putString("codigoDoMotoristaLogado", codigoMotorista);
+
                                 editor.apply();
 
                                 startActivity(intent);

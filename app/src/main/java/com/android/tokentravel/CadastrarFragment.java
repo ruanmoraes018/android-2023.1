@@ -133,6 +133,7 @@ public class CadastrarFragment extends Fragment {
                     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
                     Integer idDoMotoristaLogado = sharedPreferences.getInt("idDoMotoristaLogado", 0);
                     String emailDoMotoristaLogado = sharedPreferences.getString("emailDoUsuarioLogado", "");
+                    String codigo_motorista = sharedPreferences.getString("codigoDoMotoristaLogado", "");
 
                     String infoOrigem = editTextOrigem.getText().toString();
                     String infoDestino = editTextDestino.getText().toString();
@@ -185,6 +186,7 @@ public class CadastrarFragment extends Fragment {
                             Float.parseFloat(editTextValor.getText().toString()),
                             editTextHorarioIda.getText().toString(),
                             idDoMotoristaLogado,
+                            codigo_motorista,
                             checkBoxDomingo.isChecked(),
                             checkBoxSegunda.isChecked(),
                             checkBoxTerca.isChecked(),

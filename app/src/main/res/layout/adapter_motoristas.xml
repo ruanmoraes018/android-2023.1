@@ -2,44 +2,94 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="5dp">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
+    <View
+        android:id="@+id/containerComponentsfinal"
+        style="@style/ContainerComponents2"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:cardCornerRadius="25dp"
+        android:layout_height="115dp"
+        android:backgroundTint="@color/verde"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/miniFoto"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/logo"></ImageView>
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textName"
-        android:layout_width="0dp"
+        android:id="@+id/textOrigem"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
+        android:paddingTop="15dp"
+        android:text="Origem: Capitão Poço, Pará, Brasil"
         android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/cardView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cardView"
-        app:layout_constraintTop_toTopOf="@+id/cardView">
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/containerComponentsfinal"
+        app:layout_constraintStart_toStartOf="@+id/containerComponentsfinal"
+        app:layout_constraintTop_toTopOf="@+id/containerComponentsfinal"></TextView>
+
+    <TextView
+        android:id="@+id/textDestino"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:text="Destino: Capanema, Pará, Brasil"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/containerComponentsfinal"
+        app:layout_constraintStart_toStartOf="@+id/containerComponentsfinal"
+        app:layout_constraintTop_toBottomOf="@id/textOrigem"></TextView>
+
+    <TextView
+        android:id="@+id/textValor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:text="Valor: R$ 10,50"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@id/textHorario"
+        app:layout_constraintStart_toStartOf="@+id/containerComponentsfinal"
+        app:layout_constraintTop_toBottomOf="@id/textDestino">
     </TextView>
+
+    <TextView
+        android:id="@+id/textHorario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:text="Horário: 08:50"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/containerComponentsfinal"
+        app:layout_constraintStart_toEndOf="@id/textValor"
+        app:layout_constraintTop_toBottomOf="@id/textDestino">
+    </TextView>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/rotaselect"
+        style="@style/Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15sp"
+        android:drawableRight="@drawable/ic_seta_rota"
+        android:padding="10sp"
+        android:text="Selecionar Rota:"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/containerComponentsfinal"/>
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_marginTop="16dp"
         android:background="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardView">
+        app:layout_constraintTop_toBottomOf="@id/rotaselect">
     </ImageView>
 </androidx.constraintlayout.widget.ConstraintLayout>

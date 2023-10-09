@@ -314,7 +314,7 @@ public class FormCadastro extends AppCompatActivity {
         String senha = editTextSenha.getText().toString();
         String tipo = spinnerTipo.getSelectedItem().toString();
         String telefone = editTextTelefone.getText().toString();
-        Passageiro passageiro = new Passageiro(nome, cpf, email, senha,  telefone, tipo);
+        Passageiro passageiro = new Passageiro(nome, cpf, email, senha,  telefone, tipo, null);
         Dao dao = new Dao(this);
         String resultado = dao.inserirPassageiro(passageiro);
         Log.d("Resultado: ", resultado);
@@ -333,7 +333,7 @@ public class FormCadastro extends AppCompatActivity {
         String modelo_carro = editTextModeloCarro.getText().toString();
         String placa_veiculo = editTextPlacaVeiculo.getText().toString();
 
-        Motorista motorista = new Motorista(nome, cpf, email, senha, telefone, tipo, cnh, modelo_carro, placa_veiculo);
+        Motorista motorista = new Motorista(nome, cpf, email, senha, telefone, tipo, cnh, modelo_carro, placa_veiculo, null);
         Dao dao = new Dao(this);
         String resultado = dao.inserirMotorista(motorista);
         Log.d("Resultado: ", resultado);
