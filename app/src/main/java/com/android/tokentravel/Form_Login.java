@@ -115,6 +115,7 @@ public class Form_Login extends AppCompatActivity {
                                 int idDoMotorista = dao.buscaIdMotorista(email);
                                 String codigoMotorista = dao.buscaCodigoMotoristaPorEmail(email);
                                 int idDoPassageiro = dao.buscaIdPassageiro(email);
+                                String codigoPassageiro = dao.buscaCodigoPassageiroPorEmail(email);
                                 String nomeUsuario = dao.buscaInfoUsuario(email).getPessoa_nome();
                                 String tipoDaPessoaAutenticada = tipoUsuario;
                                 String emailDoUsuarioAutenticado = email;
@@ -131,6 +132,7 @@ public class Form_Login extends AppCompatActivity {
 
 // Adicione o código do motorista às preferências compartilhadas
                                 editor.putString("codigoDoMotoristaLogado", codigoMotorista);
+                                editor.putString("codigoDoPassageiroLogado", codigoPassageiro);
 
                                 editor.apply();
 

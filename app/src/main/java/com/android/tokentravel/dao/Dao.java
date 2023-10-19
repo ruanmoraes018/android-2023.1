@@ -501,6 +501,21 @@ public class Dao extends SQLiteOpenHelper {
         return null; // Retorna null se não encontrar o código do motorista
     }
 
+    public String buscaCodigoPassageiroPorEmail(String email) {
+        SQLiteDatabase db = getReadableDatabase();
+        String sql_busca_codigo_passageiro = "SELECT codigo_passageiro FROM passageiros " +
+                "INNER JOIN pessoas ON passageiros.id_pessoas = pessoas.pessoas_id " +
+                "WHERE pessoas_email = ?;";
+        Cursor c = db.rawQuery(sql_busca_codigo_passageiro, new String[]{email});
+
+        if (c.moveToFirst()) {
+            String codigoPassageiro = c.getString(0);
+            c.close();
+            return codigoPassageiro;
+        }
+        c.close();
+        return null;
+    }
 
     public int buscaIdPassageiro(String email) {
         SQLiteDatabase db = getReadableDatabase();
@@ -926,7 +941,7 @@ public class Dao extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
 
         // Consulta SQL para buscar dados do motorista com base no código único do motorista
-        String sql = "SELECT m.*, p.pessoas_nome, p.pessoas_email, p.pessoas_telefone " +
+        String sql = "SELECT m.*, p.pessoas_nome, p.pessoas_email, p.pessoas_telefone, p.pessoas_cpf " +
                 "FROM motoristas m " +
                 "INNER JOIN pessoas p ON m.id_pessoas = p.pessoas_id " +
                 "WHERE m.codigo_motorista = ?";
@@ -940,6 +955,7 @@ public class Dao extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 // Defina constantes para os nomes das colunas
                 final String COL_NOME = "pessoas_nome";
+                final String COL_CPF = "pessoas_cpf";
                 final String COL_EMAIL = "pessoas_email";
                 final String COL_TELEFONE = "pessoas_telefone";
                 final String COL_CNH = "motoristas_cnh";
@@ -948,6 +964,7 @@ public class Dao extends SQLiteOpenHelper {
 
                 // Recupere os dados do motorista da consulta
                 @SuppressLint("Range") String nome = cursor.getString(cursor.getColumnIndex(COL_NOME));
+                @SuppressLint("Range") String cpf = cursor.getString(cursor.getColumnIndex(COL_CPF));
                 @SuppressLint("Range") String email = cursor.getString(cursor.getColumnIndex(COL_EMAIL));
                 @SuppressLint("Range") String telefone = cursor.getString(cursor.getColumnIndex(COL_TELEFONE));
                 @SuppressLint("Range") String cnh = cursor.getString(cursor.getColumnIndex(COL_CNH));
@@ -955,7 +972,7 @@ public class Dao extends SQLiteOpenHelper {
                 @SuppressLint("Range") String placaVeiculo = cursor.getString(cursor.getColumnIndex(COL_PLACA_VEICULO));
 
                 // Crie uma instância de Motorista com os dados obtidos
-                motorista = new Motorista(nome, null, email, null, telefone, null, cnh, modeloCarro, placaVeiculo, null);
+                motorista = new Motorista(nome, cpf, email, null, telefone, null, cnh, modeloCarro, placaVeiculo, null);
 
                 // Adicione mensagens de log para verificar os dados obtidos
                 Log.d("buscaMotoristaPorCodigoUnico", "Motorista encontrado: " + motorista.toString());
@@ -974,6 +991,54 @@ public class Dao extends SQLiteOpenHelper {
         return motorista;
     }
 
+    @SuppressLint("LongLogTag")
+    public Passageiro buscaPassageiroPorCodigoUnico(String codigoUnicoPassageiro) {
+        SQLiteDatabase db = getReadableDatabase();
+
+// Consulta SQL para buscar dados do passageiro com base no código único do passageiro
+        String sql = "SELECT pa.*, p.pessoas_nome, p.pessoas_email, p.pessoas_telefone, p.pessoas_cpf " +
+                "FROM passageiros pa " +
+                "INNER JOIN pessoas p ON pa.id_pessoas = p.pessoas_id " +
+                "WHERE pa.codigo_passageiro = ?";
+
+        Cursor cursor = null;
+        Passageiro passageiro = null;
+
+        try {
+            cursor = db.rawQuery(sql, new String[]{codigoUnicoPassageiro});
+
+            if (cursor.moveToFirst()) {
+                // Defina constantes para os nomes das colunas
+                final String COL_NOME = "pessoas_nome";
+                final String COL_CPF = "pessoas_cpf";
+                final String COL_EMAIL = "pessoas_email";
+                final String COL_TELEFONE = "pessoas_telefone";
+
+                // Recupere os dados do motorista da consulta
+                @SuppressLint("Range") String nome = cursor.getString(cursor.getColumnIndex(COL_NOME));
+                @SuppressLint("Range") String cpf = cursor.getString(cursor.getColumnIndex(COL_CPF));
+                @SuppressLint("Range") String email = cursor.getString(cursor.getColumnIndex(COL_EMAIL));
+                @SuppressLint("Range") String telefone = cursor.getString(cursor.getColumnIndex(COL_TELEFONE));
+
+                // Crie uma instância de Motorista com os dados obtidos
+                passageiro = new Passageiro(nome, cpf, email, null, telefone, null, null);
+
+                // Adicione mensagens de log para verificar os dados obtidos
+                Log.d("buscaPassageiroPorCodigoUnico", "Passageiro encontrado: " + passageiro.toString());
+            } else {
+                Log.d("buscaPassageiroPorCodigoUnico", "Nenhum passageiro encontrado com o código único: " + codigoUnicoPassageiro);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("buscaPassageiroPorCodigoUnico", "Erro ao buscar passageiro por código único: " + e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return passageiro;
+    }
 
 
     @SuppressLint("Range")
@@ -992,7 +1057,5 @@ public class Dao extends SQLiteOpenHelper {
 
         return imageString;
     }
-
-
 
 }

@@ -44,48 +44,93 @@
         android:layout_gravity="center_horizontal"
         />
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_user"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="30dp"
-        android:background="@color/white" />
-
     <TextView
-        android:id="@+id/nomeDoPassageiroTextView"
+        android:id="@+id/title_inforpass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Lucas de Souza e Souza"
+        android:text="Informações do Passageiro"
+        android:textSize="25dp"
         android:textColor="@color/white"
-        android:textSize="20sp"
         android:textStyle="bold"
-        android:layout_marginTop="-38dp"
-        android:layout_marginLeft="5dp"
+        android:layout_marginTop="30dp"
         android:layout_gravity="center_horizontal"
         />
 
-    <ImageView
-        android:id="@+id/emailIconImageView"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_email"
-        android:layout_marginTop="30dp"
-        android:layout_marginStart="30dp"
-        android:background="@color/white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutinforpass"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        >
 
-    <TextView
-        android:id="@+id/emailDoPassageiroTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="90dp"
-        android:layout_marginTop="-40dp"
-        android:text="lucas@gmail.com"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent" />
+        <LinearLayout
+            android:id="@+id/linearLayout2inforpass"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/azul_marinho"
+            android:orientation="vertical"
+            android:padding="10sp"
+            app:layout_constraintBottom_toBottomOf="@+id/layoutinforpass"
+            app:layout_constraintEnd_toEndOf="@+id/layoutinforpass"
+            app:layout_constraintStart_toStartOf="@+id/layoutinforpass"
+            app:layout_constraintTop_toBottomOf="@+id/layoutinforpass">
+
+
+            <TextView
+                android:id="@+id/nomeDoPassageiroTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ruan Moraes de Assunção"
+                android:maxLength="50"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/linearLayout2inforpass"
+                app:layout_constraintStart_toStartOf="@+id/linearLayout2inforpass"
+                app:layout_constraintTop_toTopOf="@id/linearLayout2inforpass" />
+            />
+
+            <TextView
+                android:id="@+id/emailDoPassageiroTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="lucas@gmail.com"
+                android:maxLength="50"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/linearLayout2inforpass"
+                app:layout_constraintStart_toStartOf="@+id/linearLayout2inforpass"
+                app:layout_constraintTop_toTopOf="@id/nomeDoPassageiroTextView" />
+
+            <TextView
+                android:id="@+id/cpfDoPassageiroTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="456.459.345-00"
+                android:maxLength="50"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/linearLayout2inforpass"
+                app:layout_constraintStart_toStartOf="@+id/linearLayout2inforpass"
+                app:layout_constraintTop_toTopOf="@id/emailDoPassageiroTextView" />
+
+            <TextView
+                android:id="@+id/telefoneDoPassageiroTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="40028922"
+                android:maxLength="50"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/linearLayout2inforpass"
+                app:layout_constraintStart_toStartOf="@+id/linearLayout2inforpass"
+                app:layout_constraintTop_toTopOf="@id/cpfDoPassageiroTextView" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

@@ -1,6 +1,7 @@
 package com.android.tokentravel;
 import static android.app.Activity.RESULT_OK;
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,6 +27,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.android.tokentravel.dao.Dao;
+import com.android.tokentravel.objetos.Motorista;
+import com.android.tokentravel.objetos.Passageiro;
 import com.android.tokentravel.objetos.Pessoa;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
@@ -58,14 +61,26 @@ public class MenuFragment extends Fragment {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         String nomeDoPassageiro = sharedPreferences.getString("nomeDoUsuarioLogado", "");
         String emailDoPassageiro = sharedPreferences.getString("emailDoUsuarioLogado", "");
+        String codigoDoPassageiro = sharedPreferences.getString("codigoDoPassageiroLogado", "");
 
         TextView nomeDoPassageiroTextView = view.findViewById(R.id.nomeDoPassageiroTextView);
         TextView emailDoPassageiroTextView = view.findViewById(R.id.emailDoPassageiroTextView);
 
-        nomeDoPassageiroTextView.setText(nomeDoPassageiro);
-        emailDoPassageiroTextView.setText(emailDoPassageiro);
+        nomeDoPassageiroTextView.setText("Nome: " + nomeDoPassageiro);
+        emailDoPassageiroTextView.setText("E-mail: " + emailDoPassageiro);
 
         Dao = new Dao(getContext());
+
+        Passageiro passageiro = Dao.buscaPassageiroPorCodigoUnico(codigoDoPassageiro);
+        String cpf_Passageiro = passageiro.getPessoa_cpf();
+        String numeroPassageiro = passageiro.getPessoa_telefone();
+
+        @SuppressLint({"MissingInflatedId", "LocalSuppress"}) TextView cpfDoPassageiroTextView = view.findViewById(R.id.cpfDoPassageiroTextView);
+        @SuppressLint({"MissingInflatedId", "LocalSuppress"}) TextView telefoneDoPassageiroTextView = view.findViewById(R.id.telefoneDoPassageiroTextView);
+
+        cpfDoPassageiroTextView.setText("CPF: " + cpf_Passageiro);
+        telefoneDoPassageiroTextView.setText("Telefone: " + numeroPassageiro);
+
 
         if (ContextCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {

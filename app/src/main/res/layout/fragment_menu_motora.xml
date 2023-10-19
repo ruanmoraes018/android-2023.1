@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -43,47 +44,132 @@
         android:layout_gravity="center_horizontal"
         />
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_user"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="30dp"
-        android:background="@color/white" />
-
     <TextView
-        android:id="@+id/nomeDoMotoristaTextView"
+        android:id="@+id/title_informotora"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ruan Moraes de Assunção"
+        android:text="Informações do Motorista"
+        android:textSize="25dp"
         android:textColor="@color/white"
-        android:textSize="20sp"
         android:textStyle="bold"
-        android:layout_marginTop="-38dp"
-        android:layout_marginLeft="5dp"
+        android:layout_marginTop="30dp"
         android:layout_gravity="center_horizontal"
         />
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_email"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="30dp"
-        android:background="@color/white" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutinformoto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        >
 
-    <TextView
-        android:id="@+id/emailDoMotoristaTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="lucas@gmail.com"
-        android:textColor="@color/white"
-        android:layout_marginStart="20dp"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginTop="-38dp"
-        android:layout_marginLeft="-25dp"
-        android:layout_gravity="center_horizontal"
+        <LinearLayout
+            android:id="@+id/linearLayout2informotora"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/azul_marinho"
+            android:orientation="vertical"
+            android:padding="10sp"
+            app:layout_constraintBottom_toBottomOf="@+id/layoutinformoto"
+            app:layout_constraintEnd_toEndOf="@+id/layoutinformoto"
+            app:layout_constraintStart_toStartOf="@+id/layoutinformoto"
+            app:layout_constraintTop_toBottomOf="@+id/layoutinformoto">
+
+
+        <TextView
+            android:id="@+id/nomeDoMotoristaTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ruan Moraes de Assunção"
+            android:maxLength="50"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/linearLayout2informotora"
+            app:layout_constraintStart_toStartOf="@+id/linearLayout2informotora"
+            app:layout_constraintTop_toTopOf="@id/linearLayout2informotora" />
         />
+
+        <TextView
+            android:id="@+id/emailDoMotoristaTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLength="50"
+            android:text="lucas@gmail.com"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/linearLayout2informotora"
+            app:layout_constraintStart_toStartOf="@+id/linearLayout2informotora"
+            app:layout_constraintTop_toTopOf="@id/nomeDoMotoristaTextView" />
+
+        <TextView
+            android:id="@+id/cpfDoMotoristaTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="456.459.345-00"
+            android:maxLength="50"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/layoutinformoto"
+            app:layout_constraintStart_toStartOf="@+id/layoutinformoto"
+            app:layout_constraintTop_toTopOf="@id/emailDoMotoristaTextView" />
+
+        <TextView
+            android:id="@+id/telefoneDoMotoristaTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="40028922"
+            android:maxLength="50"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/layoutinformoto"
+            app:layout_constraintStart_toStartOf="@+id/layoutinformoto"
+            app:layout_constraintTop_toTopOf="@id/cpfDoMotoristaTextView" />
+
+        <TextView
+            android:id="@+id/cnhDoMotoristaTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4756879"
+            android:maxLength="50"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/layoutinformoto"
+            app:layout_constraintStart_toStartOf="@+id/layoutinformoto"
+            app:layout_constraintTop_toTopOf="@id/telefoneDoMotoristaTextView" />
+
+        <TextView
+            android:id="@+id/modelcarDoMotoristaTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fusca"
+            android:maxLength="50"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/layoutinformoto"
+            app:layout_constraintStart_toStartOf="@+id/layoutinformoto"
+            app:layout_constraintTop_toTopOf="@id/cnhDoMotoristaTextView" />
+
+        <TextView
+            android:id="@+id/placacarDoMotoristaTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DBZ-1994"
+            android:maxLength="50"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/layoutinformoto"
+            app:layout_constraintStart_toStartOf="@+id/layoutinformoto"
+            app:layout_constraintTop_toTopOf="@id/modelcarDoMotoristaTextView"/>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>
