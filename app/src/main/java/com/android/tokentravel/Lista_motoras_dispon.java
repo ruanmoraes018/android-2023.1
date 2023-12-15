@@ -3,6 +3,7 @@ package com.android.tokentravel;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,6 +50,15 @@ public class Lista_motoras_dispon extends AppCompatActivity {
         // Chame o método para buscar as rotas disponíveis com base na origem e destino
         List<Rotas> rotasDisponiveis = buscaRotasDisponiveis(origem, destino, diaSemana);
 
+        // Verifique se a lista de rotas disponíveis está vazia
+        if (rotasDisponiveis.isEmpty()) {
+            exibirMensagemNenhumaRotaEncontrada();
+        } else {
+            // Passe o contexto e a lista de rotas para o Adapter_motoristas
+            adapter = new Adapter_motoristas(this, (ArrayList<Rotas>) rotasDisponiveis);
+            recyclerView.setAdapter(adapter);
+        }
+
         // Passe o contexto e a lista de rotas para o Adapter_motoristas
         adapter = new Adapter_motoristas(this, (ArrayList<Rotas>) rotasDisponiveis);
 
@@ -59,4 +69,11 @@ public class Lista_motoras_dispon extends AppCompatActivity {
         // Chame o método do DAO para buscar as rotas disponíveis com base na origem e destino
         return dao.buscaRotasDisponiveis(origem, destino, diaSemana);
     }
+    private void exibirMensagemNenhumaRotaEncontrada() {
+        // Caso não haja rotas disponíveis, exiba uma mensagem centralizada na tela
+        TextView mensagemTextView = findViewById(R.id.mensagemTextView); // Substitua R.id.mensagemTextView pelo ID real em seu layout XML
+        mensagemTextView.setVisibility(View.VISIBLE);
+        mensagemTextView.setText("Nenhuma rota encontrada");
+    }
+
 }

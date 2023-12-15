@@ -36,11 +36,11 @@ public class MainActivity extends AppCompatActivity {
                     } else if ("Motorista".equals(userType)) {
                         intent = new Intent(MainActivity.this, Tela_principal_motorista.class);
                     } else {
-                        intent = new Intent(MainActivity.this, SelecaoActivity.class);
+                        intent = new Intent(MainActivity.this, Form_Login.class);
                     }
                 } else {
                     // Nenhum token de autenticação encontrado, o usuário precisa fazer login
-                    intent = new Intent(MainActivity.this, SelecaoActivity.class);
+                    intent = new Intent(MainActivity.this, Form_Login.class);
                 }
 
                 startActivity(intent);

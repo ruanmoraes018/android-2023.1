@@ -49,9 +49,6 @@
             android:name=".FormCadastro"
             android:exported="false" />
         <activity
-            android:name=".SelecaoActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

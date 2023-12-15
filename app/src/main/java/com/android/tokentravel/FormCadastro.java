@@ -173,6 +173,10 @@ public class FormCadastro extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Erro ao verificar o CPF.", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                if (!isCPFValido(cpf)) {
+                    Toast.makeText(getApplicationContext(), "CPF inválido!", Toast.LENGTH_SHORT).show();
+                    return; // Impede o cadastro se o CPF for inválido
+                }
                 if (resultadoEmail != null) {
                     Toast.makeText(getApplicationContext(), "O email já está cadastrado.", Toast.LENGTH_SHORT).show();
                 } else if (resultadoCPF != null) {
@@ -286,6 +290,38 @@ public class FormCadastro extends AppCompatActivity {
         String cleanCPF = cpf.replaceAll("[^\\d]", "");
         return cleanCPF.replaceAll("(\\d{3})(\\d{3})(\\d{3})(\\d{2})", "$1.$2.$3-$4");
     }
+    // Função para verificar se o CPF é válido
+    // Função para verificar se o CPF é válido
+    private boolean isCPFValido(String cpf) {
+        // Remove caracteres não numéricos do CPF
+        String cleanCPF = cpf.replaceAll("[^\\d]", "");
+
+        // Verifica se o CPF tem 11 dígitos
+        if (cleanCPF.length() != 11) {
+            return false;
+        }
+
+        // Calcula o primeiro dígito verificador do CPF
+        int soma = 0;
+        for (int i = 0; i < 9; i++) {
+            soma += Character.getNumericValue(cleanCPF.charAt(i)) * (10 - i);
+        }
+        int resto = 11 - (soma % 11);
+        int digitoVerificador1 = (resto == 10 || resto == 11) ? 0 : resto;
+
+        // Calcula o segundo dígito verificador do CPF
+        soma = 0;
+        for (int i = 0; i < 10; i++) {
+            soma += Character.getNumericValue(cleanCPF.charAt(i)) * (11 - i);
+        }
+        resto = 11 - (soma % 11);
+        int digitoVerificador2 = (resto == 10 || resto == 11) ? 0 : resto;
+
+        // Verifica se os dígitos verificadores calculados coincidem com os dígitos do CPF
+        return digitoVerificador1 == Character.getNumericValue(cleanCPF.charAt(9)) &&
+                digitoVerificador2 == Character.getNumericValue(cleanCPF.charAt(10));
+    }
+
     private boolean isValidEmail(String email) {
         String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
         Pattern pattern = Pattern.compile(emailPattern);
